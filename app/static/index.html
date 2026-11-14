@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saphes Demo</title>
+    <style>
+      :root {
+        --bg-1: #f7f1ea;
+        --bg-2: #eee3d7;
+        --panel: rgba(255, 255, 255, 0.7);
+        --panel-strong: rgba(255, 255, 255, 0.9);
+        --line: rgba(37, 31, 26, 0.09);
+        --text: #1d1a17;
+        --muted: #63605d;
+        --soft: #f3eee9;
+        --accent: #c9885f;
+        --accent-strong: #a8633b;
+        --sage: #75866f;
+        --success: #537348;
+        --danger: #a63f34;
+        --warning: #8a6a22;
+        --shadow: 0 24px 60px rgba(27, 20, 15, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        font-family: "Segoe UI", Inter, Arial, sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(201, 136, 95, 0.14), transparent 24%),
+          radial-gradient(circle at bottom right, rgba(117, 134, 111, 0.15), transparent 22%),
+          linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+        color: var(--text);
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        padding: 40px 18px 72px;
+      }
+
+      .container {
+        width: min(1180px, 100%);
+        display: grid;
+        gap: 22px;
+      }
+
+      .hero {
+        display: grid;
+        gap: 12px;
+        padding-top: 8px;
+        animation: rise 680ms ease both;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(201, 136, 95, 0.09);
+        border: 1px solid rgba(166, 99, 59, 0.14);
+        color: var(--accent-strong);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.6rem, 5vw, 5rem);
+        letter-spacing: -0.08em;
+        line-height: 0.95;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        max-width: 700px;
+        font-size: 1.08rem;
+        line-height: 1.7;
+      }
+
+      .panel {
+        background: rgba(255, 253, 249, 0.72);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+      }
+
+      .editor {
+        padding: 20px;
+        animation: rise 720ms ease both 120ms;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 196px;
+        border: 1px solid rgba(29, 26, 23, 0.08);
+        border-radius: 18px;
+        padding: 18px 18px;
+        background: linear-gradient(180deg, #fffdfa 0%, #f8f2ec 100%);
+        color: var(--text);
+        font: inherit;
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+      }
+
+      textarea:focus {
+        border-color: rgba(166, 99, 59, 0.35);
+        box-shadow: 0 0 0 4px rgba(201, 136, 95, 0.08);
+        transform: translateY(-1px);
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: 1px solid transparent;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #f0d5b6 0%, #d69a69 100%);
+        color: #201a17;
+        padding: 12px 18px;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 12px 24px rgba(166, 99, 59, 0.15);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 28px rgba(166, 99, 59, 0.2);
+      }
+
+      .ghost {
+        background: rgba(255,255,255,0.18);
+        border-color: rgba(29, 26, 23, 0.09);
+        color: var(--text);
+        box-shadow: none;
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px;
+      }
+
+      .stat {
+        background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(244,236,229,0.92));
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 18px 16px;
+        box-shadow: var(--shadow);
+        animation: rise 700ms ease both;
+      }
+
+      .stat-label {
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+      }
+
+      .stat-value {
+        margin-top: 10px;
+        font-size: clamp(2rem, 2.5vw, 2.8rem);
+        font-weight: 700;
+        letter-spacing: -0.05em;
+      }
+
+      .results {
+        display: grid;
+        gap: 14px;
+      }
+
+      .result-card {
+        background: rgba(255,255,255,0.72);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 18px 18px 16px;
+        box-shadow: var(--shadow);
+        animation: rise 700ms ease both;
+      }
+
+      .result-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 10px;
+      }
+
+      .claim-text {
+        margin: 0;
+        font-size: 1.08rem;
+        line-height: 1.5;
+        font-weight: 600;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 92px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .current { background: rgba(117, 134, 111, 0.12); color: var(--sage); }
+      .stale { background: rgba(201, 136, 95, 0.12); color: var(--accent-strong); }
+      .uncertain { background: rgba(117, 134, 111, 0.08); color: #6f7769; }
+
+      .explanation {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .source-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .source {
+        border-top: 1px solid var(--line);
+        padding-top: 10px;
+      }
+
+      .source strong {
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      .source a {
+        color: var(--accent-strong);
+        text-decoration: none;
+      }
+
+      .source a:hover {
+        text-decoration: underline;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="hero">
+        <div class="badge">Saphes</div>
+        <h1>Fact-checking for a changing world.</h1>
+        <p class="subtitle">
+          Detect stale claims, verify what is still current, and understand the evidence behind each answer.
+        </p>
+      </header>
+
+      <section class="panel editor">
+        <textarea id="answerInput" placeholder="Paste an AI-generated answer here...">Our platform uses API version 2.0, costs $20/month, and supports integration with Product X.</textarea>
+        <div class="actions">
+          <button id="verifyButton" type="button">Verify claims</button>
+          <button class="ghost" id="sampleButton" type="button">Try sample</button>
+        </div>
+      </section>
+
+      <section class="summary" id="summary" aria-live="polite"></section>
+      <section class="results" id="results" aria-live="polite"></section>
+    </div>
+
+    <script>
+      const summaryEl = document.getElementById('summary');
+      const resultsEl = document.getElementById('results');
+      const answerInput = document.getElementById('answerInput');
+
+      const sampleAnswer = 'Our platform uses API version 2.0, costs $20/month, and supports integration with Product X.';
+      const verifyButton = document.getElementById('verifyButton');
+      const sampleButton = document.getElementById('sampleButton');
+
+      function createElement(tag, className, text) {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        if (text !== undefined) element.textContent = String(text);
+        return element;
+      }
+
+      function formatCount(value) {
+        const count = Number(value);
+        return Number.isFinite(count) && count >= 0 ? Math.floor(count) : 0;
+      }
+
+      function animateCards() {
+        const cards = document.querySelectorAll('.stat, .result-card');
+        cards.forEach((card, index) => {
+          card.style.animationDelay = `${index * 70}ms`;
+        });
+      }
+
+      function renderSummary(data) {
+        const summary = data.summary || {};
+        const stats = [
+          ['Claims', formatCount(data.claims_checked), ''],
+          ['Current', formatCount(summary.current), 'var(--success)'],
+          ['Stale', formatCount(summary.stale), 'var(--danger)'],
+          ['Uncertain', formatCount(summary.uncertain), 'var(--warning)']
+        ];
+        summaryEl.replaceChildren(...stats.map(([label, count, color]) => {
+          const stat = createElement('div', 'stat');
+          stat.append(createElement('div', 'stat-label', label));
+          const value = createElement('div', 'stat-value', count);
+          if (color) value.style.color = color;
+          stat.append(value);
+          return stat;
+        }));
+      }
+
+      function renderResults(results) {
+        if (!results.length) {
+          const card = createElement('div', 'result-card');
+          card.append(createElement('p', 'explanation', 'No claims to display.'));
+          resultsEl.replaceChildren(card);
+          return;
+        }
+
+        const cards = results.map((result) => {
+          const verdicts = ['current', 'stale', 'uncertain'];
+          const verdict = verdicts.includes(result.verdict) ? result.verdict : 'uncertain';
+          const card = createElement('article', 'result-card');
+          const top = createElement('div', 'result-top');
+          top.append(createElement('strong', 'claim-text', result.claim));
+          top.append(createElement('span', `pill ${verdict}`, verdict));
+          card.append(top);
+          card.append(createElement('div', 'explanation', result.explanation));
+
+          const sources = createElement('div', 'source-list');
+          (Array.isArray(result.sources) ? result.sources : []).forEach((source) => {
+            const sourceEl = createElement('div', 'source');
+            const name = createElement('strong', '', source.name);
+            sourceEl.append(name);
+
+            const urlText = String(source.url ?? '');
+            const urlRow = createElement('div');
+            try {
+              const url = new URL(urlText);
+              if (url.protocol === 'https:' || url.protocol === 'http:') {
+                const link = createElement('a', '', urlText);
+                link.href = url.href;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                urlRow.append(link);
+              } else {
+                urlRow.textContent = urlText;
+              }
+            } catch {
+              urlRow.textContent = urlText;
+            }
+            sourceEl.append(urlRow);
+            sourceEl.append(createElement('div', 'explanation', source.snippet));
+            sources.append(sourceEl);
+          });
+          card.append(sources);
+          return card;
+        });
+        resultsEl.replaceChildren(...cards);
+      }
+
+      async function verifyAnswer() {
+        const answer = answerInput.value.trim();
+        if (!answer) {
+          alert('Please paste an answer to verify.');
+          return;
+        }
+
+        verifyButton.disabled = true;
+        sampleButton.disabled = true;
+        const loading = createElement('div', 'result-card');
+        loading.append(createElement('p', 'explanation', 'Checking claims against the latest evidence…'));
+        resultsEl.replaceChildren(loading);
+
+        try {
+          const response = await fetch('/api/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ answer })
+          });
+          if (!response.ok) {
+            throw new Error(`Request failed (${response.status}).`);
+          }
+
+          const data = await response.json();
+          if (!data || !Array.isArray(data.results)) {
+            throw new Error('The server returned an invalid response.');
+          }
+          renderSummary(data);
+          renderResults(data.results);
+          animateCards();
+        } catch (error) {
+          const card = createElement('div', 'result-card');
+          card.append(createElement('p', 'explanation', `Verification failed: ${error.message}`));
+          resultsEl.replaceChildren(card);
+          summaryEl.replaceChildren();
+        } finally {
+          verifyButton.disabled = false;
+          sampleButton.disabled = false;
+        }
+      }
+
+      verifyButton.addEventListener('click', verifyAnswer);
+      sampleButton.addEventListener('click', () => {
+        answerInput.value = sampleAnswer;
+        verifyAnswer();
+      });
+
+      verifyAnswer();
+    </script>
+  </body>
+</html>
