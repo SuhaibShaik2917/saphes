@@ -85,6 +85,17 @@
         line-height: 1.7;
       }
 
+      .demo-notice {
+        margin: 0;
+        padding: 10px 14px;
+        border-left: 3px solid var(--accent);
+        border-radius: 0 10px 10px 0;
+        background: rgba(201, 136, 95, 0.08);
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
       .panel {
         background: rgba(255, 253, 249, 0.72);
         border: 1px solid var(--line);
@@ -141,6 +152,12 @@
       button:hover {
         transform: translateY(-2px);
         box-shadow: 0 16px 28px rgba(166, 99, 59, 0.2);
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.65;
+        transform: none;
       }
 
       .ghost {
@@ -202,10 +219,12 @@
       }
 
       .claim-text {
+        min-width: 0;
         margin: 0;
         font-size: 1.08rem;
         line-height: 1.5;
         font-weight: 600;
+        overflow-wrap: anywhere;
       }
 
       .pill {
@@ -250,6 +269,7 @@
       .source a {
         color: var(--accent-strong);
         text-decoration: none;
+        overflow-wrap: anywhere;
       }
 
       .source a:hover {
@@ -266,6 +286,15 @@
           transform: translateY(0);
         }
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
     </style>
   </head>
   <body>
@@ -274,7 +303,10 @@
         <div class="badge">Saphes</div>
         <h1>Fact-checking for a changing world.</h1>
         <p class="subtitle">
-          Detect stale claims, verify what is still current, and understand the evidence behind each answer.
+          Explore claims that may be stale, review per-claim verdicts, and inspect the basis for each result.
+        </p>
+        <p class="demo-notice" role="note">
+          Demo mode: results use local heuristics. Placeholder example.com sources are not live evidence.
         </p>
       </header>
 
@@ -395,8 +427,10 @@
 
         verifyButton.disabled = true;
         sampleButton.disabled = true;
+        answerInput.disabled = true;
+        resultsEl.setAttribute('aria-busy', 'true');
         const loading = createElement('div', 'result-card');
-        loading.append(createElement('p', 'explanation', 'Checking claims against the latest evidence…'));
+        loading.append(createElement('p', 'explanation', 'Checking the local demo rules…'));
         resultsEl.replaceChildren(loading);
 
         try {
@@ -424,6 +458,8 @@
         } finally {
           verifyButton.disabled = false;
           sampleButton.disabled = false;
+          answerInput.disabled = false;
+          resultsEl.setAttribute('aria-busy', 'false');
         }
       }
 

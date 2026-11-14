@@ -21,6 +21,7 @@ def verify_answer(answer: str) -> dict:
 
     return {
         "answer": answer,
+        "evidence_mode": "local_demo",
         "claims_checked": len(claims),
         "summary": counts,
         "results": [item.to_dict() for item in verdicts],

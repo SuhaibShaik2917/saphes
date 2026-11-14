@@ -21,13 +21,13 @@ def evaluate_claim(claim: Claim) -> ClaimVerdict:
         return ClaimVerdict(
             claim=claim.text,
             verdict="stale",
-            explanation="Public API docs show the live version is 3.0, so this claim appears to be outdated.",
+            explanation="The local demo rule marks API version 2.0 as stale; no live documentation was checked.",
             confidence=0.92,
             volatility=claim.volatility,
             sources=_build_sources(
-                "Official API documentation",
+                "Example API documentation (demo)",
                 "https://example.com/docs/api-versioning",
-                "Current API docs list version 3.0 as the supported release and mark 2.0 as legacy.",
+                "Placeholder source; the local demo data represents version 3.0 as current.",
             ),
         )
 
@@ -35,13 +35,13 @@ def evaluate_claim(claim: Claim) -> ClaimVerdict:
         return ClaimVerdict(
             claim=claim.text,
             verdict="stale",
-            explanation="The current pricing reference indicates a newer rate than $20 per month.",
+            explanation="The local demo rule marks $20/month as stale; no live pricing page was checked.",
             confidence=0.88,
             volatility=claim.volatility,
             sources=_build_sources(
-                "Pricing page",
+                "Example pricing page (demo)",
                 "https://example.com/pricing",
-                "The current pricing table lists the standard plan at $24/month, not $20/month.",
+                "Placeholder source; the local demo data represents the standard plan at $24/month.",
             ),
         )
 
@@ -49,13 +49,13 @@ def evaluate_claim(claim: Claim) -> ClaimVerdict:
         return ClaimVerdict(
             claim=claim.text,
             verdict="current",
-            explanation="The current integration documentation lists Product X among supported platforms.",
+            explanation="The local demo rule recognizes Product X; no live integration documentation was checked.",
             confidence=0.83,
             volatility=claim.volatility,
             sources=_build_sources(
-                "Integration docs",
+                "Example integration documentation (demo)",
                 "https://example.com/integrations/product-x",
-                "Product X is included in the supported connectors list for the current platform version.",
+                "Placeholder source; the local demo data lists Product X as supported.",
             ),
         )
 
@@ -63,27 +63,27 @@ def evaluate_claim(claim: Claim) -> ClaimVerdict:
         return ClaimVerdict(
             claim=claim.text,
             verdict="uncertain",
-            explanation="This claim may be time-sensitive and needs direct source confirmation against the latest legal material.",
+            explanation="Local demo rules cannot verify this time-sensitive claim; check current legal material directly.",
             confidence=0.64,
             volatility=claim.volatility,
             sources=_build_sources(
-                "Regulatory tracker",
+                "Example regulatory tracker (demo)",
                 "https://example.com/legal/updates",
-                "The legal summary shows recent amendments and requires a current review before using this statement as fact.",
+                "Placeholder source; no live legal source was queried.",
             ),
         )
 
     return ClaimVerdict(
         claim=claim.text,
         verdict="uncertain",
-        explanation="No direct live evidence was matched for this claim, so it remains unverified until a fresh source is checked.",
+        explanation="Local demo rules did not match this claim; no live evidence was fetched.",
         confidence=0.51,
         volatility=claim.volatility,
         sources=[
             EvidenceSource(
-                name="Fallback search",
+                name="Example fallback search (demo)",
                 url="https://example.com/search?q=" + claim.text.replace(" ", "+"),
-                snippet="No strong evidence was found in the local verification dataset for this statement.",
+                snippet="Placeholder source; no live web search was performed.",
             )
         ],
     )

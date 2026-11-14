@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
@@ -15,13 +14,6 @@ BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 
 app = FastAPI(title=APP_NAME, version="0.1.0")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 class VerificationRequest(BaseModel):
@@ -48,6 +40,6 @@ def serve_index() -> FileResponse:
 if __name__ == "__main__":
     import uvicorn
 
-    host = os.getenv("TRUTHLAYER_HOST", "0.0.0.0")
+    host = os.getenv("TRUTHLAYER_HOST", "127.0.0.1")
     port = int(os.getenv("TRUTHLAYER_PORT", "8000"))
     uvicorn.run("app.main:app", host=host, port=port, reload=True)
