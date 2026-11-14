@@ -34,7 +34,7 @@ The current build is a demo: it uses deterministic local heuristics and does not
 3. Run the API:
 
    ```bash
-   uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+   python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
    ```
 
 4. Open the browser at:
@@ -43,11 +43,12 @@ The current build is a demo: it uses deterministic local heuristics and does not
    http://localhost:8000/
    ```
 
+Do not open `app/static/index.html` directly as a `file://` URL. The dashboard needs the API server running to verify claims.
+
 If port 8000 is blocked on your machine, run with a different port. In PowerShell:
 
 ```powershell
-$env:TRUTHLAYER_PORT = "8010"
-uvicorn app.main:app --host 127.0.0.1 --port 8010 --reload
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8010 --reload
 ```
 
 ## Example API request

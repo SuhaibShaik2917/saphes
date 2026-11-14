@@ -418,7 +418,24 @@
         resultsEl.replaceChildren(...cards);
       }
 
+      function showError(message) {
+        const card = createElement('div', 'result-card');
+        card.append(createElement('p', 'explanation', message));
+        resultsEl.replaceChildren(card);
+        summaryEl.replaceChildren();
+      }
+
       async function verifyAnswer() {
+        if (window.location.protocol === 'file:') {
+          showError(
+            'This dashboard needs the FastAPI server. From the Saphes project folder, run ' +
+            '"python -m pip install -r requirements.txt", then ' +
+            '"python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload". ' +
+            'Then open http://127.0.0.1:8000/ instead of opening index.html directly.'
+          );
+          return;
+        }
+
         const answer = answerInput.value.trim();
         if (!answer) {
           alert('Please paste an answer to verify.');
@@ -451,10 +468,7 @@
           renderResults(data.results);
           animateCards();
         } catch (error) {
-          const card = createElement('div', 'result-card');
-          card.append(createElement('p', 'explanation', `Verification failed: ${error.message}`));
-          resultsEl.replaceChildren(card);
-          summaryEl.replaceChildren();
+          showError(`Verification failed: ${error.message}`);
         } finally {
           verifyButton.disabled = false;
           sampleButton.disabled = false;

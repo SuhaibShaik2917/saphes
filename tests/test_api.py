@@ -12,6 +12,7 @@ def test_dashboard_is_served():
     assert "text/html" in response.headers["content-type"]
     assert "Verify claims" in response.text
     assert "Demo mode" in response.text
+    assert "instead of opening index.html directly" in response.text
 
 
 def test_health_endpoint():
