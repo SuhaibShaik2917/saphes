@@ -269,9 +269,39 @@ def _unsupported(kind: str) -> list[str]:
     }.get(kind, [f"'{kind}' inputs are not supported by this build."])
 
 
+_WORDY_RE = re.compile(r"[^\W\d_]", re.UNICODE)
+_LATIN_RE = re.compile(r"[A-Za-z]")
+
+
+def _non_english_share(text: str) -> float:
+    """Fraction of letters that are not Latin letters. 0.0 for plain English."""
+    letters = _WORDY_RE.findall(text)
+    if len(letters) < 20:
+        return 0.0
+    return sum(1 for char in letters if not _LATIN_RE.match(char)) / len(letters)
+
+
 def extract_from_text(raw: str) -> IngestResult:
     text, limitations = _clip(raw)
+    if _non_english_share(text) > 0.3:
+        limitations.append(
+            "Only English text is checked by this build; claims in other languages are not verified."
+        )
     return IngestResult(text=text, kind="text", meta={"chars": len(text)}, limitations=limitations)
+
+
+def _fetch_failure_reason(exc: Exception) -> str:
+    """Turn a network exception into a sentence a non-engineer can act on."""
+    name = type(exc).__name__
+    if "Connect" in name:
+        return "the host could not be reached (DNS or connection refused)"
+    if "Redirect" in name:
+        return "the page redirected too many times"
+    if "Protocol" in name:
+        return "the server closed the connection before sending a page"
+    if "SSL" in name or "Certificate" in name:
+        return "the site's TLS certificate could not be verified"
+    return f"network error ({name})"
 
 
 def extract_from_url(url: str) -> IngestResult:
@@ -286,8 +316,9 @@ def extract_from_url(url: str) -> IngestResult:
         return IngestResult(kind="url", source_ref=url,
                             limitations=["The page did not respond within 10 seconds."])
     except Exception as exc:
+        reason = _fetch_failure_reason(exc)
         return IngestResult(kind="url", source_ref=url,
-                            limitations=[f"The page could not be fetched ({type(exc).__name__})."])
+                            limitations=[f"The page could not be fetched: {reason}."])
 
     if response.status_code >= 400:
         return IngestResult(kind="url", source_ref=url,
@@ -323,14 +354,15 @@ def extract_from_bytes(name: str, data: bytes) -> IngestResult:
     if kind in {"image", "audio", "video", "spreadsheet", "unknown"}:
         return IngestResult(kind=kind, limitations=_unsupported(kind))
 
-    try:
-        raw = data.decode("utf-8")
-    except UnicodeDecodeError:
+    # Binary formats (.docx, .pdf) are containers, not text: decoding their raw
+    # bytes would only invent an encoding complaint that never happened.
+    raw = ""
+    if kind in {"text", "json", "xml", "csv", "html"}:
         try:
-            raw = data.decode("latin-1")
+            raw = data.decode("utf-8")
+        except UnicodeDecodeError:
+            raw = data.decode("latin-1", errors="replace")
             limitations.append("The file was not valid UTF-8; it was read as Latin-1.")
-        except Exception:
-            raw = ""
 
     meta: dict[str, Any] = {"bytes": len(data)}
 

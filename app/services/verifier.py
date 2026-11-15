@@ -125,6 +125,16 @@ def verify_answer(
     })
 
     if not text.strip():
+        for number, name in (
+            (3, "normalise & detect claims"),
+            (4, "plan verification"),
+            (5, "retrieve evidence"),
+            (6, "evaluate evidence"),
+            (7, "assign verdicts & confidence"),
+            (8, "assemble output"),
+        ):
+            stages.append({"stage": number, "step": name, "detail": "skipped - nothing to read",
+                           "count": 0, "ms": 0})
         return {
             "answer": answer,
             "input_kind": source.kind,
@@ -180,6 +190,39 @@ def verify_answer(
         "count": len(claims),
         "ms": _ms(started),
     })
+
+    if not claims:
+        limitations.append("No statement in this input could be checked, so nothing was verified.")
+        for number, name in (
+            (4, "plan verification"),
+            (5, "retrieve evidence"),
+            (6, "evaluate evidence"),
+            (7, "assign verdicts & confidence"),
+            (8, "assemble output"),
+        ):
+            stages.append({"stage": number, "step": name, "detail": "skipped - nothing to check",
+                           "count": 0, "ms": 0})
+        return {
+            "answer": answer,
+            "input_kind": source.kind,
+            "source_ref": source.source_ref,
+            "checked_at": _now(),
+            "evidence_mode": "none",
+            "evidence_note": None,
+            "claims_checked": 0,
+            "claims_truncated": False,
+            "max_claims": MAX_CLAIMS,
+            "staleness_index": 0.0,
+            "risk_band": "low",
+            "headline": "No checkable statements were found in this input.",
+            "summary": {"current": 0, "stale": 0, "uncertain": 0, "non_factual": 0},
+            "corrections": [],
+            "repair": {"corrected_answer": answer, "edits": [], "changed": False},
+            "trace": stages,  # backwards-compatible alias of `stages`
+            "stages": stages,
+            "limitations": limitations,
+            "results": [],
+        }
 
     # ---- stage 4: verification planning -----------------------------------
     started = time.perf_counter()

@@ -231,6 +231,11 @@ def extract_claims(answer: str) -> list[Claim]:
             if not is_assertive(trimmed):
                 continue
 
+            # A wall of text is not one claim: keep the first sentence.
+            if len(trimmed) > 240:
+                cut = re.split(r"(?<=[.!?])\s", trimmed)[0]
+                trimmed = cut if len(cut) >= 12 else trimmed[:240].rsplit(" ", 1)[0] + "\u2026"
+
             category, volatility = _classify_claim(trimmed)
             confidence = 0.86 if volatility == "high" else 0.72
             claims.append(
@@ -246,6 +251,10 @@ def extract_claims(answer: str) -> list[Claim]:
 
     if not claims:
         text = _normalize_space(answer)
+        # Pure punctuation, emoji or a single token is not a claim. Returning
+        # nothing is honest; inventing one is not.
+        if len(_alpha_words(_strip_noise(text))) < 3:
+            return []
         claims.append(
             Claim(
                 text=text,

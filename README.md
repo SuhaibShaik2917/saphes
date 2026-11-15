@@ -206,7 +206,7 @@ Nothing in a `live` response is synthetic. When the network fails the response s
 ## Tests
 
 ```bash
-pytest        # 63 tests, fully offline (network calls are mocked)
+pytest        # 72 tests, fully offline (network calls are mocked)
 ```
 
 Covers: extraction, subject preservation, query building, price drift, price parity, version drift,
@@ -257,3 +257,5 @@ tests/                          conftest forces offline mode; adapters tested wi
 - A URL is fetched once and truncated at 20 000 characters. Long pages surface at most `MAX_CLAIMS`
   (12) claims, and the response says both of those things in `limitations`.
 - Manipulation or tone detection is out of scope. Nothing here claims to prove intent.
+- **Only English is checked.** Text in other scripts is accepted but flagged as unverifiable rather
+  than mangled into meaningless "claims".
