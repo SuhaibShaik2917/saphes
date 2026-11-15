@@ -19,7 +19,10 @@ def test_health_endpoint():
     response = client.get("/api/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "service": "Saphes"}
+    payload = response.json()
+    assert payload["status"] == "ok"
+    assert payload["service"] == "Saphes"
+    assert payload["mode"] in {"live", "offline"}
 
 
 def test_verify_endpoint_returns_renderable_results():
@@ -31,7 +34,7 @@ def test_verify_endpoint_returns_renderable_results():
 
     assert response.status_code == 200
     payload = response.json()
-    assert payload["evidence_mode"] == "local_demo"
+    assert payload["evidence_mode"] in {"live", "cached", "mixed", "heuristic"}
     assert payload["claims_checked"] == len(payload["results"])
     assert sum(payload["summary"].values()) == payload["claims_checked"]
     assert all(

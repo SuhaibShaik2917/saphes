@@ -3,17 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Saphes Demo</title>
+    <title>Saphes — AI answers expire</title>
     <style>
       :root {
         --bg-1: #f7f1ea;
         --bg-2: #eee3d7;
-        --panel: rgba(255, 255, 255, 0.7);
-        --panel-strong: rgba(255, 255, 255, 0.9);
+        --panel: rgba(255, 255, 255, 0.72);
+        --panel-strong: rgba(255, 255, 255, 0.92);
         --line: rgba(37, 31, 26, 0.09);
         --text: #1d1a17;
         --muted: #63605d;
-        --soft: #f3eee9;
         --accent: #c9885f;
         --accent-strong: #a8633b;
         --sage: #75866f;
@@ -22,7 +21,6 @@
         --warning: #8a6a22;
         --shadow: 0 24px 60px rgba(27, 20, 15, 0.08);
       }
-
       * { box-sizing: border-box; }
       html, body {
         margin: 0;
@@ -34,266 +32,144 @@
           linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
         color: var(--text);
       }
+      body { display: flex; justify-content: center; padding: 40px 18px 72px; }
+      .container { width: min(1120px, 100%); display: grid; gap: 20px; }
 
-      body {
-        display: flex;
-        justify-content: center;
-        padding: 40px 18px 72px;
-      }
-
-      .container {
-        width: min(1180px, 100%);
-        display: grid;
-        gap: 22px;
-      }
-
-      .hero {
-        display: grid;
-        gap: 12px;
-        padding-top: 8px;
-        animation: rise 680ms ease both;
-      }
-
+      .hero { display: grid; gap: 10px; padding-top: 6px; animation: rise 620ms ease both; }
       .badge {
-        display: inline-flex;
-        align-items: center;
-        width: fit-content;
-        padding: 7px 12px;
-        border-radius: 999px;
-        background: rgba(201, 136, 95, 0.09);
-        border: 1px solid rgba(166, 99, 59, 0.14);
-        color: var(--accent-strong);
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+        display: inline-flex; width: fit-content; padding: 6px 12px; border-radius: 999px;
+        background: rgba(201, 136, 95, 0.14); color: var(--accent-strong);
+        font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
       }
-
-      h1 {
-        margin: 0;
-        font-size: clamp(2.6rem, 5vw, 5rem);
-        letter-spacing: -0.08em;
-        line-height: 0.95;
-        font-weight: 700;
-      }
-
-      .subtitle {
-        margin: 0;
-        color: var(--muted);
-        max-width: 700px;
-        font-size: 1.08rem;
-        line-height: 1.7;
-      }
-
+      h1 { margin: 0; font-size: clamp(1.9rem, 4.2vw, 2.9rem); line-height: 1.1; letter-spacing: -0.02em; }
+      .subtitle { margin: 0; max-width: 62ch; color: var(--muted); font-size: 1.02rem; line-height: 1.65; }
       .demo-notice {
-        margin: 0;
-        padding: 10px 14px;
-        border-left: 3px solid var(--accent);
-        border-radius: 0 10px 10px 0;
-        background: rgba(201, 136, 95, 0.08);
-        color: var(--muted);
-        font-size: 0.9rem;
-        line-height: 1.5;
+        margin: 2px 0 0; padding: 9px 13px; border-radius: 12px;
+        background: rgba(255, 255, 255, 0.6); border: 1px solid var(--line);
+        color: var(--muted); font-size: 0.83rem;
       }
+      .demo-notice strong { color: var(--text); }
 
       .panel {
-        background: rgba(255, 253, 249, 0.72);
-        border: 1px solid var(--line);
-        border-radius: 28px;
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(10px);
+        background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
+        padding: 18px; box-shadow: var(--shadow);
       }
-
-      .editor {
-        padding: 20px;
-        animation: rise 720ms ease both 120ms;
-      }
-
       textarea {
-        width: 100%;
-        min-height: 196px;
-        border: 1px solid rgba(29, 26, 23, 0.08);
-        border-radius: 18px;
-        padding: 18px 18px;
-        background: linear-gradient(180deg, #fffdfa 0%, #f8f2ec 100%);
-        color: var(--text);
-        font: inherit;
-        resize: vertical;
-        outline: none;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+        width: 100%; min-height: 108px; resize: vertical; border-radius: 14px;
+        border: 1px solid var(--line); padding: 14px; font: inherit; line-height: 1.6;
+        background: var(--panel-strong); color: var(--text);
       }
-
-      textarea:focus {
-        border-color: rgba(166, 99, 59, 0.35);
-        box-shadow: 0 0 0 4px rgba(201, 136, 95, 0.08);
-        transform: translateY(-1px);
-      }
-
-      .actions {
-        display: flex;
-        gap: 12px;
-        margin-top: 16px;
-        flex-wrap: wrap;
-      }
-
+      textarea:focus { outline: 2px solid rgba(201, 136, 95, 0.45); outline-offset: 1px; }
+      .actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
       button {
-        border: 1px solid transparent;
-        border-radius: 14px;
-        background: linear-gradient(135deg, #f0d5b6 0%, #d69a69 100%);
-        color: #201a17;
-        padding: 12px 18px;
-        font: inherit;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 12px 24px rgba(166, 99, 59, 0.15);
-        transition: transform 0.18s ease, box-shadow 0.18s ease;
+        border: 0; border-radius: 999px; padding: 11px 22px; font: inherit; font-weight: 650;
+        background: var(--accent-strong); color: #fff; cursor: pointer;
       }
+      button:disabled { opacity: 0.55; cursor: progress; }
+      button.ghost { background: rgba(37, 31, 26, 0.06); color: var(--text); }
 
-      button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 16px 28px rgba(166, 99, 59, 0.2);
+      /* ---- staleness index hero ---- */
+      .index-card {
+        display: grid; grid-template-columns: 168px 1fr; gap: 20px; align-items: center;
+        background: var(--panel-strong); border: 1px solid var(--line); border-radius: 22px;
+        padding: 20px 22px; box-shadow: var(--shadow); animation: rise 620ms ease both;
       }
+      .index-number { display: grid; gap: 2px; }
+      .index-value { font-size: 2.9rem; font-weight: 750; line-height: 1; letter-spacing: -0.03em; }
+      .index-label { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+      .risk { display: inline-flex; width: fit-content; margin-top: 6px; padding: 4px 10px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+      .risk.low { background: rgba(83, 115, 72, 0.14); color: var(--success); }
+      .risk.moderate { background: rgba(138, 106, 34, 0.14); color: var(--warning); }
+      .risk.high { background: rgba(166, 63, 52, 0.14); color: var(--danger); }
+      .headline { margin: 0 0 6px; font-size: 1.12rem; line-height: 1.45; font-weight: 650; }
+      .checked-at { margin: 0; color: var(--muted); font-size: 0.85rem; }
+      .checked-at code { background: rgba(37,31,26,0.06); padding: 1px 6px; border-radius: 6px; }
 
-      button:disabled {
-        cursor: wait;
-        opacity: 0.65;
-        transform: none;
-      }
+      /* ---- diff ---- */
+      .diff-card { background: var(--panel-strong); border: 1px solid var(--line); border-radius: 22px; padding: 18px 20px; box-shadow: var(--shadow); }
+      .diff-title { margin: 0 0 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-strong); }
+      .diff-line { display: grid; gap: 4px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 0.95rem; line-height: 1.6; }
+      .diff-line:first-of-type { border-top: 0; }
+      .was { color: var(--danger); }
+      .was s { text-decoration-thickness: 2px; text-decoration-color: rgba(166, 63, 52, 0.6); }
+      .now { color: var(--success); font-weight: 600; }
+      .diff-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 
-      .ghost {
-        background: rgba(255,255,255,0.18);
-        border-color: rgba(29, 26, 23, 0.09);
-        color: var(--text);
-        box-shadow: none;
-      }
+      /* ---- stats ---- */
+      .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      .stat { background: var(--panel-strong); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+      .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+      .stat-value { font-size: 1.7rem; font-weight: 700; line-height: 1.2; }
 
-      .summary {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 16px;
-      }
-
-      .stat {
-        background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(244,236,229,0.92));
-        border: 1px solid var(--line);
-        border-radius: 20px;
-        padding: 18px 16px;
-        box-shadow: var(--shadow);
-        animation: rise 700ms ease both;
-      }
-
-      .stat-label {
-        color: var(--muted);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-      }
-
-      .stat-value {
-        margin-top: 10px;
-        font-size: clamp(2rem, 2.5vw, 2.8rem);
-        font-weight: 700;
-        letter-spacing: -0.05em;
-      }
-
-      .results {
-        display: grid;
-        gap: 14px;
-      }
-
-      .result-card {
-        background: rgba(255,255,255,0.72);
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        padding: 18px 18px 16px;
-        box-shadow: var(--shadow);
-        animation: rise 700ms ease both;
-      }
-
-      .result-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 10px;
-      }
-
-      .claim-text {
-        min-width: 0;
-        margin: 0;
-        font-size: 1.08rem;
-        line-height: 1.5;
-        font-weight: 600;
-        overflow-wrap: anywhere;
-      }
-
+      /* ---- results ---- */
+      .results { display: grid; gap: 14px; }
+      .result-card { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 18px; box-shadow: var(--shadow); animation: rise 640ms ease both; }
+      .result-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 10px; }
+      .claim-text { min-width: 0; margin: 0; font-size: 1.06rem; line-height: 1.5; font-weight: 650; overflow-wrap: anywhere; }
       .pill {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 92px;
-        padding: 7px 10px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
+        flex: none; display: inline-flex; align-items: center; justify-content: center;
+        min-width: 92px; padding: 7px 10px; border-radius: 999px;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      }
+      .current { background: rgba(83, 115, 72, 0.14); color: var(--success); }
+      .stale { background: rgba(166, 63, 52, 0.14); color: var(--danger); }
+      .uncertain { background: rgba(138, 106, 34, 0.14); color: var(--warning); }
+      .explanation { margin: 0; color: var(--muted); line-height: 1.7; }
+      .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .chip { font-size: 11px; color: var(--muted); background: rgba(37, 31, 26, 0.05); border-radius: 999px; padding: 4px 10px; }
+      .chip b { color: var(--text); font-weight: 650; }
+      .source-list { display: grid; gap: 12px; margin-top: 14px; }
+      .source { border-top: 1px solid var(--line); padding-top: 10px; }
+      .source strong { display: block; margin-bottom: 3px; font-size: 0.94rem; }
+      .source .snippet { margin: 6px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+      .source a { color: var(--accent-strong); text-decoration: none; overflow-wrap: anywhere; font-size: 0.88rem; }
+      .source a:hover { text-decoration: underline; }
+      .domain { font-size: 11px; color: var(--muted); }
+
+      /* ---- repaired answer ---- */
+      .repair-card {
+        background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,241,234,0.92));
+        border: 1px solid rgba(83, 115, 72, 0.28); border-radius: 22px;
+        padding: 18px 20px; box-shadow: var(--shadow);
+      }
+      .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+      .card-title { margin: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--success); }
+      .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+      .btn-small {
+        border: 1px solid rgba(37,31,26,0.14); background: #fff; color: var(--text);
+        border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 12px; font-weight: 650; cursor: pointer;
+      }
+      .btn-small:hover { border-color: var(--accent); color: var(--accent-strong); }
+      .repaired-text { margin: 0; font-size: 1.02rem; line-height: 1.7; }
+      mark.fix {
+        background: rgba(83, 115, 72, 0.16); color: #2f5722; font-weight: 650;
+        border-radius: 4px; padding: 0 3px;
+      }
+      mark.evidence {
+        background: rgba(201, 136, 95, 0.22); color: var(--accent-strong); font-weight: 650;
+        border-radius: 3px; padding: 0 2px;
       }
 
-      .current { background: rgba(117, 134, 111, 0.12); color: var(--sage); }
-      .stale { background: rgba(201, 136, 95, 0.12); color: var(--accent-strong); }
-      .uncertain { background: rgba(117, 134, 111, 0.08); color: #6f7769; }
-
-      .explanation {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.7;
+      /* ---- pipeline trace ---- */
+      .trace { display: flex; flex-wrap: wrap; gap: 8px; }
+      .trace-step {
+        display: inline-flex; align-items: baseline; gap: 6px;
+        background: var(--panel-strong); border: 1px solid var(--line);
+        border-radius: 12px; padding: 7px 11px; font-size: 12px; color: var(--muted);
       }
+      .trace-step b { color: var(--text); font-weight: 650; }
+      .trace-step .ms { font-variant-numeric: tabular-nums; color: var(--accent-strong); font-weight: 650; }
+      .trace-step:not(:last-child)::after { content: "→"; color: rgba(37,31,26,0.25); margin-left: 4px; }
+      .chip.priority { background: rgba(166, 63, 52, 0.1); color: var(--danger); font-weight: 650; }
+      .chip.priority.holds { background: rgba(83, 115, 72, 0.12); color: var(--success); }
 
-      .source-list {
-        display: grid;
-        gap: 12px;
-        margin-top: 14px;
-      }
-
-      .source {
-        border-top: 1px solid var(--line);
-        padding-top: 10px;
-      }
-
-      .source strong {
-        display: block;
-        margin-bottom: 3px;
-      }
-
-      .source a {
-        color: var(--accent-strong);
-        text-decoration: none;
-        overflow-wrap: anywhere;
-      }
-
-      .source a:hover {
-        text-decoration: underline;
-      }
-
-      @keyframes rise {
-        from {
-          opacity: 0;
-          transform: translateY(18px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
+      @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
       @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          scroll-behavior: auto !important;
-          transition-duration: 0.01ms !important;
-        }
+        *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      }
+      @media (max-width: 760px) {
+        .index-card { grid-template-columns: 1fr; }
+        .summary { grid-template-columns: repeat(2, 1fr); }
       }
     </style>
   </head>
@@ -301,23 +177,29 @@
     <div class="container">
       <header class="hero">
         <div class="badge">Saphes</div>
-        <h1>Fact-checking for a changing world.</h1>
+        <h1>AI answers expire. Saphes tells you which parts already did.</h1>
         <p class="subtitle">
-          Explore claims that may be stale, review per-claim verdicts, and inspect the basis for each result.
+          Paste an AI-generated answer. Every claim is checked against the live web and stamped
+          CURRENT, STALE or UNCERTAIN — with the source we used and the moment we looked.
         </p>
-        <p class="demo-notice" role="note">
-          Demo mode: results use local heuristics. Placeholder example.com sources are not live evidence.
+        <p class="demo-notice" role="note" id="modeNotice">
+          <strong>Demo mode:</strong> claims are verified against live web search when the network
+          allows it, with cached evidence and a deterministic fallback if it does not.
         </p>
       </header>
 
       <section class="panel editor">
-        <textarea id="answerInput" placeholder="Paste an AI-generated answer here...">Our platform uses API version 2.0, costs $20/month, and supports integration with Product X.</textarea>
+        <textarea id="answerInput" placeholder="Paste an AI-generated answer here...">FastAPI is on version 0.100.0, Python 3.9 is the latest stable Python release, and FastAPI is a Python web framework for building APIs.</textarea>
         <div class="actions">
           <button id="verifyButton" type="button">Verify claims</button>
-          <button class="ghost" id="sampleButton" type="button">Try sample</button>
+          <button class="ghost" id="sampleButton" type="button">Try another sample</button>
         </div>
       </section>
 
+      <section id="indexCard" class="index-card" hidden aria-live="polite"></section>
+      <section id="repairCard" class="repair-card" hidden></section>
+      <section id="diffCard" class="diff-card" hidden></section>
+      <section id="traceStrip" class="trace" hidden aria-label="Verification pipeline"></section>
       <section class="summary" id="summary" aria-live="polite"></section>
       <section class="results" id="results" aria-live="polite"></section>
     </div>
@@ -326,10 +208,20 @@
       const summaryEl = document.getElementById('summary');
       const resultsEl = document.getElementById('results');
       const answerInput = document.getElementById('answerInput');
-
-      const sampleAnswer = 'Our platform uses API version 2.0, costs $20/month, and supports integration with Product X.';
+      const indexCard = document.getElementById('indexCard');
+      const diffCard = document.getElementById('diffCard');
+      const repairCard = document.getElementById('repairCard');
+      const traceStrip = document.getElementById('traceStrip');
+      const modeNotice = document.getElementById('modeNotice');
       const verifyButton = document.getElementById('verifyButton');
       const sampleButton = document.getElementById('sampleButton');
+
+      const samples = [
+        'FastAPI is on version 0.100.0, Python 3.9 is the latest stable Python release, and FastAPI is a Python web framework for building APIs.',
+        'Our platform uses API version 2.0, costs $20/month, and supports integration with Product X.',
+        'The Tavily Project plan costs $20 per month and includes 4,000 API credits.'
+      ];
+      let sampleIndex = 0;
 
       function createElement(tag, className, text) {
         const element = document.createElement(tag);
@@ -344,10 +236,200 @@
       }
 
       function animateCards() {
-        const cards = document.querySelectorAll('.stat, .result-card');
-        cards.forEach((card, index) => {
-          card.style.animationDelay = `${index * 70}ms`;
+        document.querySelectorAll('.stat, .result-card, .index-card, .diff-card').forEach((card, index) => {
+          card.style.animationDelay = `${index * 60}ms`;
         });
+      }
+
+      function renderIndex(data) {
+        const index = Number(data.staleness_index);
+        const value = Number.isFinite(index) ? index.toFixed(2) : '—';
+        const band = ['low', 'moderate', 'high'].includes(data.risk_band) ? data.risk_band : 'moderate';
+
+        const number = createElement('div', 'index-number');
+        number.append(createElement('div', 'index-label', 'Staleness index'));
+        const big = createElement('div', 'index-value', value);
+        big.style.color = band === 'high' ? 'var(--danger)' : band === 'moderate' ? 'var(--warning)' : 'var(--success)';
+        number.append(big);
+        number.append(createElement('span', `risk ${band}`, `${band} risk`));
+
+        const copy = createElement('div');
+        copy.append(createElement('p', 'headline', data.headline || ''));
+        const checked = createElement('p', 'checked-at');
+        checked.append(document.createTextNode('checked as of '));
+        const stamp = createElement('code', '', data.checked_at || 'unknown');
+        checked.append(stamp);
+        checked.append(document.createTextNode(` · evidence: ${data.evidence_mode || 'unknown'}`));
+        copy.append(checked);
+
+        indexCard.replaceChildren(number, copy);
+        indexCard.hidden = false;
+      }
+
+      function renderDiff(data) {
+        const corrections = Array.isArray(data.corrections) ? data.corrections : [];
+        if (!corrections.length) {
+          diffCard.hidden = true;
+          diffCard.replaceChildren();
+          return;
+        }
+
+        const nodes = [createElement('p', 'diff-title', 'What the answer says vs what the sources say now')];
+        corrections.forEach((item) => {
+          const line = createElement('div', 'diff-line');
+          line.append(createElement('div', 'diff-tag', 'Claim'));
+          line.append(createElement('div', '', item.claim));
+          const was = createElement('div', 'was');
+          was.append(document.createTextNode('was '));
+          const s = createElement('s', '', item.asserted);
+          was.append(s);
+          was.append(document.createTextNode('  →  now '));
+          const now = createElement('span', 'now', item.current);
+          was.append(now);
+          line.append(was);
+          nodes.push(line);
+        });
+        diffCard.replaceChildren(...nodes);
+        diffCard.hidden = false;
+      }
+
+      let lastReport = null;
+
+      function highlight(text, needle) {
+        if (!needle) return document.createTextNode(text);
+        const index = text.toLowerCase().indexOf(String(needle).toLowerCase());
+        if (index < 0) return document.createTextNode(text);
+        const wrap = document.createDocumentFragment();
+        wrap.append(document.createTextNode(text.slice(0, index)));
+        wrap.append(createElement('mark', 'fix', text.slice(index, index + String(needle).length)));
+        wrap.append(document.createTextNode(text.slice(index + String(needle).length)));
+        return wrap;
+      }
+
+      function buildReport(data) {
+        const lines = [
+          '# Saphes freshness report',
+          '',
+          `Checked at **${data.checked_at}** · evidence mode: **${data.evidence_mode}**`,
+          '',
+          `**${data.headline}**`,
+          '',
+          `Staleness index: **${data.staleness_index}** (${data.risk_band} risk) · ${data.claims_checked} claims checked`,
+          '',
+          '## Claims, highest risk first',
+          ''
+        ];
+        (data.results || []).forEach((item) => {
+          lines.push(`### ${item.priority}. ${item.claim}`);
+          lines.push('');
+          lines.push(`**${String(item.verdict).toUpperCase()}** · confidence ${item.confidence} · volatility ${item.volatility} · risk ${item.risk_score}`);
+          lines.push('');
+          lines.push(item.explanation);
+          if (item.asserted_value || item.current_value) {
+            lines.push('');
+            lines.push(`- was: ${item.asserted_value || '—'}`);
+            lines.push(`- now: ${item.current_value || '—'}`);
+          }
+          if (item.query) {
+            lines.push('');
+            lines.push(`Searched: \`${item.query}\``);
+          }
+          (item.sources || []).forEach((source) => {
+            lines.push(`- source: [${source.name}](${source.url})${source.captured_at ? ` (captured ${source.captured_at})` : ''}`);
+          });
+          lines.push('');
+        });
+        if (data.repair && data.repair.changed) {
+          lines.push('## Corrected answer');
+          lines.push('');
+          lines.push(data.repair.corrected_answer);
+          lines.push('');
+        }
+        lines.push('---');
+        lines.push('Generated by Saphes — it checks whether an answer is still true, not whether it ever was.');
+        return lines.join('\n');
+      }
+
+      function renderRepair(data) {
+        const repair = data.repair || {};
+        if (!repair.changed) {
+          repairCard.hidden = true;
+          repairCard.replaceChildren();
+          return;
+        }
+
+        const head = createElement('div', 'card-head');
+        head.append(createElement('p', 'card-title', 'The repaired answer — same voice, current facts'));
+        const buttons = createElement('div', 'btn-row');
+
+        const copyButton = createElement('button', 'btn-small', 'Copy corrected answer');
+        copyButton.type = 'button';
+        copyButton.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(repair.corrected_answer);
+            copyButton.textContent = 'Copied ✓';
+            setTimeout(() => { copyButton.textContent = 'Copy corrected answer'; }, 1600);
+          } catch {
+            copyButton.textContent = 'Press Ctrl+C';
+          }
+        });
+
+        const reportButton = createElement('button', 'btn-small', 'Download report (.md)');
+        reportButton.type = 'button';
+        reportButton.addEventListener('click', () => {
+          if (!lastReport) return;
+          const blob = new Blob([lastReport], { type: 'text/markdown' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'saphes-freshness-report.md';
+          link.click();
+          URL.revokeObjectURL(link.href);
+        });
+
+        buttons.append(copyButton, reportButton);
+        head.append(buttons);
+
+        const text = createElement('p', 'repaired-text');
+        let cursor = 0;
+        const corrected = String(repair.corrected_answer || '');
+        const edits = Array.isArray(repair.edits) ? repair.edits : [];
+        const candidatesFor = (value) => {
+          const raw = String(value || '');
+          return [raw, raw.replace(/^v/i, ''), raw.replace(/\//g, ' / '), raw.replace(/\//g, ' per '), raw.replace(/\//g, ' a ')]
+            .filter((item, index, all) => item && all.indexOf(item) === index);
+        };
+        edits.forEach((edit) => {
+          for (const needle of candidatesFor(edit.current)) {
+            const index = corrected.indexOf(needle, cursor);
+            if (index < 0) continue;
+            text.append(document.createTextNode(corrected.slice(cursor, index)));
+            text.append(createElement('mark', 'fix', needle));
+            cursor = index + needle.length;
+            break;
+          }
+        });
+        text.append(document.createTextNode(corrected.slice(cursor)));
+
+        repairCard.replaceChildren(head, text);
+        repairCard.hidden = false;
+      }
+
+      function renderTrace(data) {
+        const steps = Array.isArray(data.trace) ? data.trace : [];
+        if (!steps.length) {
+          traceStrip.hidden = true;
+          return;
+        }
+        traceStrip.replaceChildren(...steps.map((step) => {
+          const chip = createElement('span', 'trace-step');
+          chip.append(document.createTextNode('✓ '));
+          chip.append(createElement('b', '', step.step));
+          const ms = Number(step.ms);
+          chip.append(createElement('span', 'ms', ms > 0 ? `${ms}ms` : '<1ms'));
+          if (step.count !== undefined) chip.append(createElement('span', '', `· ${step.count}`));
+          return chip;
+        }));
+        traceStrip.hidden = false;
       }
 
       function renderSummary(data) {
@@ -384,13 +466,49 @@
           top.append(createElement('strong', 'claim-text', result.claim));
           top.append(createElement('span', `pill ${verdict}`, verdict));
           card.append(top);
-          card.append(createElement('div', 'explanation', result.explanation));
+          card.append(createElement('p', 'explanation', result.explanation));
+
+          const meta = createElement('div', 'meta-row');
+          if (result.priority) {
+            const priority = createElement('span', `chip priority ${result.verdict === 'current' ? 'holds' : ''}`, `#${result.priority} · ${result.risk_label || 'risk'} · ${result.risk_score ?? ''}`);
+            meta.append(priority);
+          }
+          const confidence = Number(result.confidence);
+          if (Number.isFinite(confidence)) {
+            const chip = createElement('span', 'chip');
+            chip.append(document.createTextNode('confidence '));
+            chip.append(createElement('b', '', confidence.toFixed(2)));
+            meta.append(chip);
+          }
+          meta.append(createElement('span', 'chip', `volatility ${result.volatility || 'unknown'}`));
+          meta.append(createElement('span', 'chip', `evidence ${result.evidence_mode || 'heuristic'}`));
+          if (result.query) {
+            const chip = createElement('span', 'chip');
+            chip.append(document.createTextNode('searched '));
+            chip.append(createElement('b', '', result.query));
+            meta.append(chip);
+          }
+          card.append(meta);
+
+          if (result.verdict === 'stale' && result.asserted_value && result.current_value) {
+            const line = createElement('div', 'diff-line');
+            const was = createElement('div', 'was');
+            was.append(document.createTextNode('was '));
+            was.append(createElement('s', '', result.asserted_value));
+            was.append(document.createTextNode('  →  now '));
+            was.append(createElement('span', 'now', result.current_value));
+            line.append(was);
+            card.append(line);
+          }
 
           const sources = createElement('div', 'source-list');
-          (Array.isArray(result.sources) ? result.sources : []).forEach((source) => {
+          const sourceItems = Array.isArray(result.sources) ? result.sources : [];
+          if (!sourceItems.length) {
+            sources.append(createElement('p', 'explanation', 'No live source was used for this verdict (offline fallback).'));
+          }
+          sourceItems.forEach((source) => {
             const sourceEl = createElement('div', 'source');
-            const name = createElement('strong', '', source.name);
-            sourceEl.append(name);
+            sourceEl.append(createElement('strong', '', source.name));
 
             const urlText = String(source.url ?? '');
             const urlRow = createElement('div');
@@ -408,8 +526,29 @@
             } catch {
               urlRow.textContent = urlText;
             }
+            if (source.domain) {
+              urlRow.append(document.createTextNode('  '));
+              urlRow.append(createElement('span', 'domain', `· ${source.domain}`));
+            }
+            if (source.captured_at) {
+              urlRow.append(createElement('span', 'domain', ` · captured ${source.captured_at}`));
+            }
             sourceEl.append(urlRow);
-            sourceEl.append(createElement('div', 'explanation', source.snippet));
+
+            if (source.snippet) {
+              const snippetEl = createElement('p', 'snippet');
+              const snippet = String(source.snippet);
+              const match = source.match ? String(source.match) : '';
+              const at = match ? snippet.toLowerCase().indexOf(match.toLowerCase()) : -1;
+              if (at >= 0) {
+                snippetEl.append(document.createTextNode(snippet.slice(0, at)));
+                snippetEl.append(createElement('mark', 'evidence', snippet.slice(at, at + match.length)));
+                snippetEl.append(document.createTextNode(snippet.slice(at + match.length)));
+              } else {
+                snippetEl.textContent = snippet;
+              }
+              sourceEl.append(snippetEl);
+            }
             sources.append(sourceEl);
           });
           card.append(sources);
@@ -423,6 +562,10 @@
         card.append(createElement('p', 'explanation', message));
         resultsEl.replaceChildren(card);
         summaryEl.replaceChildren();
+        indexCard.hidden = true;
+        diffCard.hidden = true;
+        repairCard.hidden = true;
+        traceStrip.hidden = true;
       }
 
       async function verifyAnswer() {
@@ -447,8 +590,12 @@
         answerInput.disabled = true;
         resultsEl.setAttribute('aria-busy', 'true');
         const loading = createElement('div', 'result-card');
-        loading.append(createElement('p', 'explanation', 'Checking the local demo rules…'));
+        loading.append(createElement('p', 'explanation', 'Splitting the answer into claims and searching the live web for each one…'));
         resultsEl.replaceChildren(loading);
+        indexCard.hidden = true;
+        diffCard.hidden = true;
+        repairCard.hidden = true;
+        traceStrip.hidden = true;
 
         try {
           const response = await fetch('/api/verify', {
@@ -464,6 +611,24 @@
           if (!data || !Array.isArray(data.results)) {
             throw new Error('The server returned an invalid response.');
           }
+
+          let modeText;
+          if (data.evidence_mode === 'live' && !data.evidence_note) {
+            modeText = 'Live: every source below was fetched from the web during this request.';
+          } else if (data.evidence_mode === 'mixed' || data.evidence_mode === 'live') {
+            modeText = `Mixed: some claims were checked against live sources; the rest fell back to ${data.evidence_note ? 'cache' : 'deterministic rules'}.`;
+          } else if (data.evidence_mode === 'cached') {
+            modeText = `Cached: real results captured earlier, because live search was unavailable (${data.evidence_note || 'offline'}).`;
+          } else {
+            modeText = 'Offline: no live evidence for these claims, so the deterministic rules were used.';
+          }
+          modeNotice.replaceChildren(createElement('strong', '', 'Evidence: '), document.createTextNode(modeText));
+
+          lastReport = buildReport(data);
+          renderIndex(data);
+          renderRepair(data);
+          renderTrace(data);
+          renderDiff(data);
           renderSummary(data);
           renderResults(data.results);
           animateCards();
@@ -479,7 +644,8 @@
 
       verifyButton.addEventListener('click', verifyAnswer);
       sampleButton.addEventListener('click', () => {
-        answerInput.value = sampleAnswer;
+        sampleIndex = (sampleIndex + 1) % samples.length;
+        answerInput.value = samples[sampleIndex];
         verifyAnswer();
       });
 

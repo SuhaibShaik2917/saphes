@@ -1,0 +1,171 @@
+{
+ "dac521eeb3727605": {
+  "query": "FastAPI is on version 0.100.0 latest version release notes",
+  "captured_at": "2026-11-15T04:11:25+00:00",
+  "results": [
+   {
+    "title": "Release Notes - FastAPI",
+    "url": "https://fastapi.tiangolo.com/release-notes",
+    "content": "### Internal\u00b6 \ud83d\udd27 Update sponsors, add Fern. PR #9956 by @tiangolo. \ud83d\udc77 Update FastAPI People token. PR #9844 by @tiangolo. \ud83d\udc65 Update FastAPI People. PR #9775 by @tiangolo. \ud83d\udc77 Update MkDocs Material token. PR #9843 by @tiangolo. \ud83d\udc77 Update token for latest changes. PR #9842 by @tiangolo. ## 0.100.0 (2023-07-07)\u00b6 \u2728 Support for Pydantic v2 \u2728 Pydantic version 2 has the core re-written in Rust and includes a lot of improvements and features, for example: [...] \ud83d\udc77 Upgrade `latest-changes` GitHub Action and pin `actions/checkout@v5`. PR #14403 by @svlandeg. \ud83d\udee0\ufe0f Add `add-permalinks` and `add-permalinks-page` t"
+   },
+   {
+    "title": "FastAPI 0.100.0 release notes | Hacker News",
+    "url": "https://news.ycombinator.com/item?id=36635523",
+    "content": "frequently, bugs are fixed regularly, and the code is still continuously improving. That's why the current versions are still 0.x.x, this reflects that each version could potentially have breaking changes. What kind of weird reasoning is this? This should be why you use actual semver, and you use the major version to indicate backward compatibility breaking changes, minor versions for new features, and patch versions for bug fixes that don't actually actually change the public API surface. If [...] | | | | --- | | | senko on July 7, 2023 | parent | next (javascript:void(0)) This is semver: > M"
+   },
+   {
+    "title": "FastAPI Shipped Three Breaking Changes in 21 Hours: What to Check | Scout Monitoring",
+    "url": "https://www.scoutapm.com/blog/fastapi-0-148-breaking-changes",
+    "content": "FastAPI is still below 1.0, so minor version bumps are allowed to break things. The FastAPI docs recommend pinning to a minor version for exactly this reason, for example `fastapi>=0.145.0,<0.146.0`. If your requirements say `fastapi>=0.100` or just `fastapi`, your next build picks up all three changes together. [...] At Scout Monitoring, we monitor a lot of FastAPI apps, and a loosely pinned `fastapi` dependency is the most common way these releases will arrive. This post walks through each change, who it affects, and what to search your codebase for before you upgrade. ## Why Three Breaking "
+   }
+  ]
+ },
+ "ed506f623fec6ca2": {
+  "query": "Python 3.9 is the latest stable Python release",
+  "captured_at": "2026-11-15T04:10:10+00:00",
+  "results": [
+   {
+    "title": "Python Release Python 3.9.0 | Python.org",
+    "url": "https://www.python.org/downloads/release/python-390",
+    "content": "Note: Python 3.9.0 has been superseded by Python 3.9.25. Release date: Oct. 5, 2020 ## This is the stable release of Python 3.9.0 Note: The release you're looking at is Python 3.9.0, a legacy release. Python 3.11 is now the latest feature release series of Python 3. Get the latest release of 3.11.x here. ## Installer news [...] ## Installer news This is the first version of Python to default to the 64-bit installer on Windows. The installer now also actively disallows installation on Windows 7. Python 3.9 is incompatible with this unsupported version of Windows. ## Major new features of the 3."
+   },
+   {
+    "title": "Status of Python versions",
+    "url": "https://devguide.python.org/versions",
+    "content": "| Branch | Schedule | Status | First release | End of life | Release manager | --- --- --- | | 3.10 | PEP 619 | end-of-life | 2021-10-04 | 2026-10-01 | Pablo Galindo Salgado | | 3.9 | PEP 596 | end-of-life | 2020-10-05 | 2025-10-31 | \u0141ukasz Langa | | 3.8 | PEP 569 | end-of-life | 2019-10-14 | 2024-10-07 | \u0141ukasz Langa | | 3.7 | PEP 537 | end-of-life | 2018-06-27 | 2023-06-27 | Ned Deily | | 3.6 | PEP 494 | end-of-life | 2016-12-23 | 2021-12-23 | Ned Deily |"
+   },
+   {
+    "title": "Python Release Python 3.9.22 | Python.org",
+    "url": "https://www.python.org/downloads/release/python-3922",
+    "content": "## No installers According to the release calendar specified in PEP 596, Python 3.9 is now in the \"security fixes only\" stage of its life cycle: the 3.9 branch only accepts security fixes and releases of those are made irregularly in source-only form until October 2025. Python 3.9 isn't receiving regular bug fixes anymore, and binary installers are no longer provided for it. Python 3.9.13 was the last full bugfix release of Python 3.9 with binary installers. Full Changelog ## Files [...] Note: Python 3.9.22 has been superseded by Python 3.9.25. Release date: April 8, 2025 ## This is a security"
+   }
+  ]
+ },
+ "d2875c7e6e796835": {
+  "query": "FastAPI is Python web framework for building APIs. latest",
+  "captured_at": "2026-11-15T04:10:29+00:00",
+  "results": [
+   {
+    "title": "FastAPI: The Modern Python Web Framework That Bridges Performance and Simplicity | by Eresh Gorantla | CodeX | Medium",
+    "url": "https://medium.com/codex/fastapi-the-modern-python-web-framework-that-bridges-performance-and-simplicity-cfc4ab807418",
+    "content": "\u00b7 Jul 2, 2025 ## What is FastAPI? FastAPI is a modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard Python type hints. It\u2019s built on top of Starlette (ASGI) and Pydantic (data validation). ### Key Features Asynchronous, non-blocking Data validation with Pydantic Built-in OpenAPI docs (Swagger) Fast JSON serialization Type-safe and editor-friendly ## Why FastAPI Over Django or Flask? ## WSGI vs ASGI: The Backbone of Web Servers [...] ## FastAPI Components Overview FastAPI is modular by design. It gives you granular control of: Request handling Routi"
+   },
+   {
+    "title": "Day 1: What is FastAPI & Why Developers Love It - DEV Community",
+    "url": "https://dev.to/awslearnerdaily/day-1-what-is-fastapi-why-developers-love-it-2997",
+    "content": "## \ud83e\udde0 What is FastAPI? FastAPI is a modern, fast (high-performance) web framework for building APIs with Python 3.8+ using standard type hints. It\u2019s designed to make it easy to build APIs quickly and efficiently while writing clean, production-ready code. Built on top of Starlette for web handling and Pydantic for data validation, FastAPI combines speed, simplicity, and powerful features out of the box. ## \ud83d\udd25 Top Features of FastAPI ## \ud83e\udd14 Why FastAPI Over Flask or Django? [...] | Feature | FastAPI | Flask | Django | --- --- | | Performance | \ud83d\ude80 Very High (ASGI + async support) | \u26a1 Moderate (WSGI, "
+   },
+   {
+    "title": "FastAPI - Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/FastAPI",
+    "content": "FastAPI is a web framework for building HTTP-based service APIs in Python \"Python (programming language)\") 3.8+. It uses Pydantic and type hints to validate, serialize and deserialize data. FastAPI also automatically generates OpenAPI documentation for APIs built with it. It was first released in 2018. ## Components [edit] ### Pydantic [edit] [...] | FastAPI | | Developer | Sebasti\u00e1n Ram\u00edrez | | Release | December 5, 2018; 7 years ago (2018-12-05) | | Stable release | 0.142.2 Edit this on Wikidata / 30 September 2026; 0 days ago (30 September 2026) | | | | Written in | Python \"Python (programm"
+   }
+  ]
+ },
+ "d44564504434db02": {
+  "query": "The Tavily Project plan costs $20 per month pricing current price",
+  "captured_at": "2026-11-15T04:10:10+00:00",
+  "results": [
+   {
+    "title": "Tavily Pricing (Oct 2026): Credits, Plans & a Tavily AI Agent",
+    "url": "https://katteb.com/blog/tavily-ai-agent",
+    "content": "TL;DR. On 12 October 2026 the Tavily pricing page listed four ways to pay: a free Researcher plan with 1,000 API credits a month, pay-as-you-go at $0.008 per credit, a monthly Project plan whose slider runs from $30 (4,000 credits) through $100 (15,000) and $220 (38,000) to $500 (100,000), and custom Enterprise pricing. The Tavily credits documentation prices the work itself: a basic search is 1 credit, an advanced search 2, five successful page extractions 1 or 2 credits, ten mapped pages 1 or [...] | Plan (docs name) | Credits per month | Monthly price (USD) | Price per credit | --- --- | | "
+   },
+   {
+    "title": "Tavily Pricing and Review (2026): $30 to $500 \u00b7 Reachkit",
+    "url": "https://reachkit.ai/directory/tools/tavily",
+    "content": "## Tavily: common questions How much does Tavily cost? Tavily's Researcher plan is free with 1,000 API credits a month. Paid plans cost $30 (Project, 4,000 credits), $100 (Bootstrap, 15,000), $220 (Startup, 38,000) or $500 (Growth, 100,000) a month, or $0.008 per credit on pay-as-you-go. Enterprise is custom. Prices checked November 2026. Is Tavily free to use? [...] | Category | Web search API, used for account research and enrichment | | What it does | Searches the live web and extracts page content for AI agents | | Starting price | Project $30/mo for 4,000 credits, or $0.008 a credit pay-a"
+   },
+   {
+    "title": "Tavily Pricing 2026: Credits, Plans and Real Costs",
+    "url": "https://coldiq.com/blog/tavily-pricing",
+    "content": "Tavily runs on API credits. You get 1,000 credits per month free, then paid plans start at $30 per month (4,000 credits) or pay-as-you-go at $0.008 per credit. A basic search costs 1 credit and an advanced search costs 2, but a single Research call can burn 4 to 250 credits, so your bill tracks what your agent actually calls, not the plan sticker price. [...] | | | | | --- --- | | | Credits per month | Monthly price | Price per credit | | Researcher (Free) | 1,000 | $0 | \u2013 | | Project | 4,000 | $30 per month | $0.0075 | | Bootstrap | 15,000 | $100 per month | $0.0067 | | Startup | 38,000 | $22"
+   }
+  ]
+ },
+ "db3499a36e28baa8": {
+  "query": "platform uses API version 2.0 latest version release notes",
+  "captured_at": "2026-11-15T04:10:30+00:00",
+  "results": [
+   {
+    "title": "API Platform | endoflife.date",
+    "url": "https://endoflife.date/api-platform",
+    "content": "| 2.0 | 9 years ago (24 Nov 2016) | Ended 9 years ago (08 Sep 2017) | Ended 8 years ago (16 Feb 2018) | 2.0.11 (08 Sep 2017) | | | [...] API Platform follows Semantic Versioning. A new minor release is released every six months, and a new major release every two years (along with a minor release that brings an upgrade path). Besides the development branch, three releases are maintained: the latest release is actively supported with regular bug fixes; the previous release is supported for security maintenance only. Releases older than the latest two are not maintained."
+   },
+   {
+    "title": "Regarding Version v2 changelog #CHANGE-2046 - Atlassian",
+    "url": "https://community.atlassian.com/forums/discussion/3112672/regarding-version-v2-changelog-change-2046",
+    "content": "Hello @AppFlow Team, Welcome to Atlassian community! Please note as part of the v2 API deprecation, all endpoints\u2014including those supporting Search JQL\u2014are planned to be deprecated and eventually sunset. This means that the ability to use JQL via the v2 `/search` endpoint will also be removed in line with the overall v2 API retirement. `/search` My Recommendations: Begin migrating all API calls to v3 endpoints, especially for search and JQL operations. [...] Please note as part of the v2 API deprecation, all endpoints\u2014including those supporting Search JQL\u2014are planned to be deprecated and event"
+   },
+   {
+    "title": "Changelog | Meta for Developers",
+    "url": "https://developers.facebook.com/documentation/development/graph-api/changelog",
+    "content": "Versioned changes are changes introduced with the release of a new API version. Versioned changes typically apply to the newest version immediately and often will apply to other versions at a future date. The changelog accompanying each release indicates which changes apply to the current release and which changes apply to other versions. Refer to our Upgrade Guide to learn how to upgrade to a new API version. ### Out-Of-Cycle Changes [...] # Changelog Updated: Oct 29, 2026 Copy for LLM View as Markdown The latest Graph API version is: v27.0 The Graph API and Marketing API changelogs document "
+   }
+  ]
+ },
+ "39d9ddc02bd0c7fd": {
+  "query": "platform costs $20/month pricing current price",
+  "captured_at": "2026-11-15T04:10:30+00:00",
+  "results": [
+   {
+    "title": "What is ChatGPT Plus? | OpenAI Help Center",
+    "url": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
+    "content": "+ Voice conversations + Image generation + File uploads and analysis + Deep Research tools (where available) # Subscription Details Price: $20/month (billed monthly). Platform: ChatGPT Plus is available on the ChatGPT website and supported apps. Not included: API usage is separate and billed independently. See API pricing. # How do I sign up? 1. Log into ChatGPT. 2. Click on your profile icon -> Upgrade Plan. 3. Select Get Plus. # Usage Limits [...] OpenAI # What is ChatGPT Plus? Information about our paid subscription plan, Plus. Updated: 18 hours ago ChatGPT Plus includes broader model and t"
+   },
+   {
+    "title": "ChatGPT Plus: Is It Worth $20/Month in 2026? | Lovable",
+    "url": "https://lovable.dev/guides/is-chatgpt-plus-worth-it",
+    "content": "This article gives you a decision framework based on real workflows, not marketing promises. You'll know exactly whether to subscribe, stick with free, or explore complementary tools for your specific needs. ## What ChatGPT Plus Actually Includes ChatGPT Plus costs $20 per month and delivers substantial upgrades over the free tier, though recent changes have shifted what those upgrades actually mean. ### Message Limits and Model Access [...] ### Competitor Alternatives Claude Pro costs $20 monthly (approximately $17 billed annually) and offers a 200,000-token context window, which is significa"
+   },
+   {
+    "title": "ChatGPT Pricing (2026): Every Plan, Free to $500 Pro",
+    "url": "https://justinmckelvey.com/blog/chatgpt-pricing",
+    "content": "How much is ChatGPT Plus? : $20 a month. OpenAI sells Plus monthly only (annual billing is offered for Business and Enterprise, not Plus), so a year of Plus is $240. Plus adds the GPT-6.1 Sol, GPT-6 Astra and GPT-6 Sol models, scheduled tasks, Sites, full Codex and ChatGPT Work access, and a larger context window than Free. [...] #### ChatGPT Business vs Plus (2026): Which One a Small Business Should Actually Pay For ChatGPT Plus vs Business, as of September 2026: Plus is $20 a month for one person and OpenAI may train on your chats unless you opt out; Business is $20 a seat billed annually or"
+   }
+  ]
+ },
+ "a76fed0c7101da68": {
+  "query": "platform supports integration with Product X. documentation supported integration",
+  "captured_at": "2026-11-15T04:10:30+00:00",
+  "results": [
+   {
+    "title": "Understanding Integration Support: Key Concepts and Definitions",
+    "url": "https://bindbee.dev/feeds/blog/integration-support",
+    "content": "Shift from custom, one-off integrations to productized integrations: a single integration codebase that handles variation through configuration (sync direction, field mapping, notification preferences) rather than custom code per customer. The operational payoff is significant: Simplified documentation across all customers Reduced per-customer support variance Self-serve activation through an integration marketplace or catalog Faster onboarding with predictable setup flows [...] ### Build Observability and Documentation In, Not On Productized integrations only scale if your team can see what's"
+   },
+   {
+    "title": "Cross-Platform Integration [2026]: How Modern Organizations Work",
+    "url": "https://exalate.com/blog/cross-platform-integration",
+    "content": "## Frequently Asked Questions ### What platforms does Exalate support for cross-platform integration? Exalate natively supports Jira Cloud, ServiceNow, Zendesk, Salesforce, Azure DevOps (Cloud and Server), GitHub, Freshservice, Freshdesk, and Asana. For platforms not on that list, Exalate provides custom REST API connectors that extend integration capabilities to proprietary systems and niche tools. [...] 3. Choose the right tool. The ideal solution for integrating multiple platforms needs to be secure, compliant, flexible, customizable, and scalable. Check features, supported connectors, user"
+   },
+   {
+    "title": "Integration Guide",
+    "url": "https://uat.accpg.accertify.net/api/documentation/integrationGuidelines/mobileSDK/emv3DSsdk.html?locale=et_ET",
+    "content": "Documentation API Reference # Mobile SDK Integration The Mobile SDK assists you to develop a mobile application that will accept digital payments via the Accertify Payment Gateway. The Mobile SDK is supported on the iOS and Android platforms. Integration guidelines for each platform are available below: iOS Android Minimum API version support for the Mobile SDK is 61. ## Download the mobile software development kit (SDK) and documentation [...] The Admin - Software and Documentation Downloads screen displays. It contains the mobile SDKs and Mobile SDK Integration Guide. 3. Select the appropria"
+   }
+  ]
+ },
+ "df4ca5274720cbfa": {
+  "query": "The Tavily Project plan includes 4,000 API credits. latest",
+  "captured_at": "2026-11-15T04:10:10+00:00",
+  "results": [
+   {
+    "title": "Tavily Pricing (Oct 2026): Credits, Plans & a Tavily AI Agent",
+    "url": "https://katteb.com/blog/tavily-ai-agent",
+    "content": "TL;DR. On 12 October 2026 the Tavily pricing page listed four ways to pay: a free Researcher plan with 1,000 API credits a month, pay-as-you-go at $0.008 per credit, a monthly Project plan whose slider runs from $30 (4,000 credits) through $100 (15,000) and $220 (38,000) to $500 (100,000), and custom Enterprise pricing. The Tavily credits documentation prices the work itself: a basic search is 1 credit, an advanced search 2, five successful page extractions 1 or 2 credits, ten mapped pages 1 or [...] | Plan (docs name) | Credits per month | Monthly price (USD) | Price per credit | --- --- | | "
+   },
+   {
+    "title": "Tavily Pricing and Review (2026): $30 to $500 \u00b7 Reachkit",
+    "url": "https://reachkit.ai/directory/tools/tavily",
+    "content": "## Tavily: common questions How much does Tavily cost? Tavily's Researcher plan is free with 1,000 API credits a month. Paid plans cost $30 (Project, 4,000 credits), $100 (Bootstrap, 15,000), $220 (Startup, 38,000) or $500 (Growth, 100,000) a month, or $0.008 per credit on pay-as-you-go. Enterprise is custom. Prices checked November 2026. Is Tavily free to use? [...] | Category | Web search API, used for account research and enrichment | | What it does | Searches the live web and extracts page content for AI agents | | Starting price | Project $30/mo for 4,000 credits, or $0.008 a credit pay-a"
+   },
+   {
+    "title": "Tavily Pricing 2026: Credits, Plans and Real Costs",
+    "url": "https://coldiq.com/blog/tavily-pricing",
+    "content": "Tavily runs on API credits. You get 1,000 credits per month free, then paid plans start at $30 per month (4,000 credits) or pay-as-you-go at $0.008 per credit. A basic search costs 1 credit and an advanced search costs 2, but a single Research call can burn 4 to 250 credits, so your bill tracks what your agent actually calls, not the plan sticker price. [...] | | | | | --- --- | | | Credits per month | Monthly price | Price per credit | | Researcher (Free) | 1,000 | $0 | \u2013 | | Project | 4,000 | $30 per month | $0.0075 | | Bootstrap | 15,000 | $100 per month | $0.0067 | | Startup | 38,000 | $22"
+   }
+  ],
+  "note": "reused from the sibling Tavily pricing query - same source pages"
+ }
+}
