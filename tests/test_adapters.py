@@ -181,6 +181,20 @@ def test_claim_split_keeps_the_subject():
     assert len(claims) >= 3
 
 
+def test_bulleted_lines_are_kept_as_claims():
+    claims = extract_claims("- Python 3.9 is the latest release\n* The plan costs $20/month\n1. FastAPI is at 0.100.0")
+
+    assert len(claims) >= 3
+
+
+def test_very_long_answers_are_capped_and_say_so():
+    answer = ". ".join(f"Service {i} costs ${i}/month" for i in range(1, 21)) + "."
+    result = verify_answer(answer)
+
+    assert result["claims_checked"] <= result["max_claims"]
+    assert result["claims_truncated"] is True
+
+
 def test_search_query_strips_first_person_framing():
     query = build_search_query("Our platform uses API version 2.0", "api_version")
 

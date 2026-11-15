@@ -22,10 +22,14 @@ TAVILY_SEARCH_URL = os.getenv("TAVILY_SEARCH_URL", "https://api.tavily.com/searc
 TAVILY_TIMEOUT_SECONDS = float(os.getenv("TAVILY_TIMEOUT_SECONDS", "8"))
 TAVILY_MAX_RESULTS = int(os.getenv("TAVILY_MAX_RESULTS", "3"))
 
+# One search per claim, so a pasted essay could otherwise take a minute. Past this
+# the answer is still verified, just capped - and the response says so.
+MAX_CLAIMS = int(os.getenv("SAPHES_MAX_CLAIMS", "12"))
+
 # Search results are cached on disk so a repeat claim costs nothing and the
 # demo still works with the network unplugged.
 CACHE_DIR = os.getenv("SAPHES_CACHE_DIR", ".saphes_cache")
 BUNDLED_EVIDENCE = os.path.join(os.path.dirname(__file__), "data", "cached_evidence.json")
 
-SAPHES_HOST = os.getenv("SAPHES_HOST", os.getenv("TRUTHLAYER_HOST", "127.0.0.1"))
-SAPHES_PORT = int(os.getenv("SAPHES_PORT", os.getenv("TRUTHLAYER_PORT", "8000")))
+SAPHES_HOST = os.getenv("SAPHES_HOST", "127.0.0.1")
+SAPHES_PORT = int(os.getenv("SAPHES_PORT", "8000"))

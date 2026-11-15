@@ -96,7 +96,7 @@
       .diff-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 
       /* ---- stats ---- */
-      .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
       .stat { background: var(--panel-strong); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
       .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
       .stat-value { font-size: 1.7rem; font-weight: 700; line-height: 1.2; }
@@ -114,6 +114,13 @@
       .current { background: rgba(83, 115, 72, 0.14); color: var(--success); }
       .stale { background: rgba(166, 63, 52, 0.14); color: var(--danger); }
       .uncertain { background: rgba(138, 106, 34, 0.14); color: var(--warning); }
+      .non_factual { background: rgba(99, 96, 93, 0.12); color: var(--muted); }
+      .limits { background: #fdfaf6; border: 1px solid rgba(138, 106, 34, 0.3); border-radius: 18px; padding: 16px 18px; }
+      .limits h3 { margin: 0 0 8px; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--warning); }
+      .limits ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+      .file-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+      .file-row label { font-size: 0.85rem; color: var(--muted); }
+      .file-row input[type=file] { font-size: 0.85rem; color: var(--muted); max-width: 100%; }
       .explanation { margin: 0; color: var(--muted); line-height: 1.7; }
       .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
       .chip { font-size: 11px; color: var(--muted); background: rgba(37, 31, 26, 0.05); border-radius: 999px; padding: 4px 10px; }
@@ -179,8 +186,9 @@
         <div class="badge">Saphes</div>
         <h1>AI answers expire. Saphes tells you which parts already did.</h1>
         <p class="subtitle">
-          Paste an AI-generated answer. Every claim is checked against the live web and stamped
+          Paste an answer, drop a link, or upload a document. Every factual claim is checked against the live web and stamped
           CURRENT, STALE or UNCERTAIN — with the source we used and the moment we looked.
+          Opinions, predictions and questions get a label instead of a grade.
         </p>
         <p class="demo-notice" role="note" id="modeNotice">
           <strong>Demo mode:</strong> claims are verified against live web search when the network
@@ -189,16 +197,21 @@
       </header>
 
       <section class="panel editor">
-        <textarea id="answerInput" placeholder="Paste an AI-generated answer here...">FastAPI is on version 0.100.0, Python 3.9 is the latest stable Python release, and FastAPI is a Python web framework for building APIs.</textarea>
+        <textarea id="answerInput" placeholder="Paste an answer or a URL (https://...)">FastAPI is on version 0.100.0, Python 3.9 is the latest stable Python release, and FastAPI is a Python web framework for building APIs.</textarea>
         <div class="actions">
           <button id="verifyButton" type="button">Verify claims</button>
           <button class="ghost" id="sampleButton" type="button">Try another sample</button>
+        </div>
+        <div class="file-row">
+          <label for="fileInput">Or upload a file: .txt .md .csv .json .xml .html .docx .pdf</label>
+          <input id="fileInput" type="file" accept=".txt,.md,.markdown,.csv,.tsv,.json,.xml,.html,.htm,.docx,.pdf,.png,.jpg,.jpeg,.mp3,.mp4,.xlsx,.pptx" />
         </div>
       </section>
 
       <section id="indexCard" class="index-card" hidden aria-live="polite"></section>
       <section id="repairCard" class="repair-card" hidden></section>
       <section id="diffCard" class="diff-card" hidden></section>
+      <section id="limitsCard" class="limits" hidden></section>
       <section id="traceStrip" class="trace" hidden aria-label="Verification pipeline"></section>
       <section class="summary" id="summary" aria-live="polite"></section>
       <section class="results" id="results" aria-live="polite"></section>
@@ -212,6 +225,8 @@
       const diffCard = document.getElementById('diffCard');
       const repairCard = document.getElementById('repairCard');
       const traceStrip = document.getElementById('traceStrip');
+      const limitsCard = document.getElementById('limitsCard');
+      const fileInput = document.getElementById('fileInput');
       const modeNotice = document.getElementById('modeNotice');
       const verifyButton = document.getElementById('verifyButton');
       const sampleButton = document.getElementById('sampleButton');
@@ -414,6 +429,19 @@
         repairCard.hidden = false;
       }
 
+      function renderLimitations(data) {
+        const items = Array.isArray(data.limitations) ? data.limitations : [];
+        if (!items.length) {
+          limitsCard.hidden = true;
+          limitsCard.replaceChildren();
+          return;
+        }
+        const list = createElement('ul');
+        items.forEach((item) => list.append(createElement('li', '', item)));
+        limitsCard.replaceChildren(createElement('h3', '', 'What this run could not do'), list);
+        limitsCard.hidden = false;
+      }
+
       function renderTrace(data) {
         const steps = Array.isArray(data.trace) ? data.trace : [];
         if (!steps.length) {
@@ -424,6 +452,7 @@
           const chip = createElement('span', 'trace-step');
           chip.append(document.createTextNode('✓ '));
           chip.append(createElement('b', '', step.step));
+          if (step.detail) chip.append(createElement('span', '', `— ${step.detail}`));
           const ms = Number(step.ms);
           chip.append(createElement('span', 'ms', ms > 0 ? `${ms}ms` : '<1ms'));
           if (step.count !== undefined) chip.append(createElement('span', '', `· ${step.count}`));
@@ -434,11 +463,16 @@
 
       function renderSummary(data) {
         const summary = data.summary || {};
+        if (Number(data.claims_checked) === 0 && data.headline) {
+          summaryEl.replaceChildren(createElement('p', 'explanation', data.headline));
+          return;
+        }
         const stats = [
           ['Claims', formatCount(data.claims_checked), ''],
           ['Current', formatCount(summary.current), 'var(--success)'],
           ['Stale', formatCount(summary.stale), 'var(--danger)'],
-          ['Uncertain', formatCount(summary.uncertain), 'var(--warning)']
+          ['Uncertain', formatCount(summary.uncertain), 'var(--warning)'],
+          ['Opinion / forecast', formatCount(summary.non_factual), 'var(--muted)']
         ];
         summaryEl.replaceChildren(...stats.map(([label, count, color]) => {
           const stat = createElement('div', 'stat');
@@ -459,12 +493,12 @@
         }
 
         const cards = results.map((result) => {
-          const verdicts = ['current', 'stale', 'uncertain'];
+          const verdicts = ['current', 'stale', 'uncertain', 'non_factual'];
           const verdict = verdicts.includes(result.verdict) ? result.verdict : 'uncertain';
           const card = createElement('article', 'result-card');
           const top = createElement('div', 'result-top');
           top.append(createElement('strong', 'claim-text', result.claim));
-          top.append(createElement('span', `pill ${verdict}`, verdict));
+          top.append(createElement('span', `pill ${verdict}`, verdict.replace('_', ' ')));
           card.append(top);
           card.append(createElement('p', 'explanation', result.explanation));
 
@@ -479,6 +513,9 @@
             chip.append(document.createTextNode('confidence '));
             chip.append(createElement('b', '', confidence.toFixed(2)));
             meta.append(chip);
+          }
+          if (result.claim_type && result.claim_type !== 'fact') {
+            meta.append(createElement('span', 'chip', `type: ${result.claim_type}`));
           }
           meta.append(createElement('span', 'chip', `volatility ${result.volatility || 'unknown'}`));
           meta.append(createElement('span', 'chip', `evidence ${result.evidence_mode || 'heuristic'}`));
@@ -568,6 +605,56 @@
         traceStrip.hidden = true;
       }
 
+      function applyResult(data) {
+        const modeLabels = {
+          live: 'Live: every source below was fetched from the web during this request.',
+          mixed: 'Mixed: some claims were checked against live sources; the rest fell back to cached or offline evidence.',
+          cached: 'Cached: serving real results captured earlier, because live search was unavailable.',
+          heuristic: 'Offline: no live evidence for these claims, so deterministic rules were used.',
+          none: 'No evidence retrieval was needed for this input.'
+        };
+        const modeLabel = modeLabels[data.evidence_mode] || 'Evidence mode unknown.';
+        const modeText = data.evidence_note ? `${modeLabel} Reason: ${data.evidence_note}.` : modeLabel;
+        modeNotice.replaceChildren(createElement('strong', '', 'Evidence: '), document.createTextNode(modeText));
+
+        lastReport = buildReport(data);
+        renderIndex(data);
+        renderRepair(data);
+        renderTrace(data);
+        renderLimitations(data);
+        renderDiff(data);
+        renderSummary(data);
+        renderResults(data.results);
+        animateCards();
+      }
+
+      async function verifyFile(file) {
+        if (!file) return;
+        const form = new FormData();
+        form.append('file', file);
+        verifyButton.disabled = true;
+        sampleButton.disabled = true;
+        fileInput.disabled = true;
+        resultsEl.setAttribute('aria-busy', 'true');
+        const loading = createElement('div', 'result-card');
+        loading.append(createElement('p', 'explanation', `Reading ${file.name} and checking it against live sources…`));
+        resultsEl.replaceChildren(loading);
+        indexCard.hidden = true; diffCard.hidden = true; repairCard.hidden = true;
+        traceStrip.hidden = true; limitsCard.hidden = true;
+        try {
+          const response = await fetch('/api/verify-file', { method: 'POST', body: form });
+          if (!response.ok) throw new Error(`Request failed (${response.status}).`);
+          applyResult(await response.json());
+        } catch (error) {
+          showError(`Verification failed: ${error.message}`);
+        } finally {
+          verifyButton.disabled = false;
+          sampleButton.disabled = false;
+          fileInput.disabled = false;
+          resultsEl.setAttribute('aria-busy', 'false');
+        }
+      }
+
       async function verifyAnswer() {
         if (window.location.protocol === 'file:') {
           showError(
@@ -596,6 +683,7 @@
         diffCard.hidden = true;
         repairCard.hidden = true;
         traceStrip.hidden = true;
+        limitsCard.hidden = true;
 
         try {
           const response = await fetch('/api/verify', {
@@ -612,26 +700,7 @@
             throw new Error('The server returned an invalid response.');
           }
 
-          let modeText;
-          if (data.evidence_mode === 'live' && !data.evidence_note) {
-            modeText = 'Live: every source below was fetched from the web during this request.';
-          } else if (data.evidence_mode === 'mixed' || data.evidence_mode === 'live') {
-            modeText = `Mixed: some claims were checked against live sources; the rest fell back to ${data.evidence_note ? 'cache' : 'deterministic rules'}.`;
-          } else if (data.evidence_mode === 'cached') {
-            modeText = `Cached: real results captured earlier, because live search was unavailable (${data.evidence_note || 'offline'}).`;
-          } else {
-            modeText = 'Offline: no live evidence for these claims, so the deterministic rules were used.';
-          }
-          modeNotice.replaceChildren(createElement('strong', '', 'Evidence: '), document.createTextNode(modeText));
-
-          lastReport = buildReport(data);
-          renderIndex(data);
-          renderRepair(data);
-          renderTrace(data);
-          renderDiff(data);
-          renderSummary(data);
-          renderResults(data.results);
-          animateCards();
+          applyResult(data);
         } catch (error) {
           showError(`Verification failed: ${error.message}`);
         } finally {
@@ -643,6 +712,7 @@
       }
 
       verifyButton.addEventListener('click', verifyAnswer);
+      fileInput.addEventListener('change', (event) => verifyFile(event.target.files && event.target.files[0]));
       sampleButton.addEventListener('click', () => {
         sampleIndex = (sampleIndex + 1) % samples.length;
         answerInput.value = samples[sampleIndex];

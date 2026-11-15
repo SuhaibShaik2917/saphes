@@ -2,9 +2,9 @@
 
 ### AI answers expire. Saphes tells you which parts already did.
 
-Paste an AI-generated answer. Saphes splits it into individual claims, checks each claim against
-the live web, and stamps it **CURRENT**, **STALE** or **UNCERTAIN** — with the source it used and
-the exact moment it looked.
+Paste an AI-generated answer, drop a URL, or upload a document. Saphes splits it into individual
+claims, checks each factual claim against the live web, and stamps it **CURRENT**, **STALE**,
+**UNCERTAIN** or **NOT A FACTUAL CLAIM** — with the source it used and the exact moment it looked.
 
 ![Saphes dashboard: staleness index 0.76, two stale claims, sources and a checked-as-of stamp](docs/demo.png)
 
@@ -67,36 +67,49 @@ send to whoever owns the docs.
 2. **Every verdict carries `checked_at`.** A freshness check without a timestamp contradicts itself.
 3. **`uncertain` is a first-class verdict.** When the evidence doesn't state the claim, Saphes says so
    instead of guessing. Both of the answer's remaining claims are decided on evidence, not vibes.
-4. **The reasoning is visible.** Every response carries a `trace` with per-step timings — extract,
-   search, compare, repair — so nobody has to take a black box on faith.
+4. **The reasoning is visible.** Every response carries all eight stages with per-stage timings and
+   counts, plus a `limitations` list when a run could not do part of the job — so nobody has to take
+   a black box on faith.
 
 ## How it works
 
-```
-answer
-  → claim extraction        split into sentences + conjunctions, keep the subject
-  → per-claim search query  strip first-person framing, add a category hint
-  → live evidence           Tavily search (keyless), 8s timeout, disk cache
-  → value comparison        versions compared numerically, prices parsed, dates checked
-  → verdict + source + timestamp + staleness index
-```
+Eight stages, each recorded in the response so the run explains itself:
 
-Claims are returned **ordered by risk**, not by position in the paragraph, so the thing that will
-embarrass you most is at the top:
+| # | Stage | What actually happens |
+|---|---|---|
+| 1 | Input ingestion | detect text / URL / file, fetch and bound it (5 MB, 10 s, 20 000 chars) |
+| 2 | Content extraction | HTML → visible text, .docx/.pdf/.json/.xml/.csv → plain statements |
+| 3 | Normalise + detect claims | split, restore the subject, drop link labels, tag opinion / prediction / question / fact |
+| 4 | Verification planning | which claims can be searched at all, which query each one needs |
+| 5 | Retrieval | Tavily search (keyless), 8 s timeout, disk cache, bundled snapshot as last resort |
+| 6 | Evidence evaluation | support / contradict / not established — per claim, no guessing |
+| 7 | Verdict + confidence | CURRENT / STALE / UNCERTAIN / NOT FACTUAL, plus risk score and staleness index |
+| 8 | Output | answer repair, Markdown report, sources, timings, limitations |
 
 ```
 risk = staleness (stale 1.0 / uncertain 0.5 / current 0.0)
      x volatility (high 1.0 / medium 0.65 / low 0.35)
      x (0.5 + confidence)
-```
 
-**Staleness index** is one number per answer, weighted by claim volatility, so a dead price outranks
-a dead footnote:
-
-```
 index = Σ(volatility_weight × confidence × staleness) / Σ(volatility_weight × confidence)
-        staleness: stale = 1.0, uncertain = 0.5, current = 0.0
 ```
+
+Claims come back **ordered by risk**, not by position, so the thing that will embarrass you most is
+at the top. Opinions, predictions and questions never enter the index — they get no factual verdict.
+
+### What it accepts
+
+| Input | Status |
+|---|---|
+| pasted text | works (the core path) |
+| a URL | works — page is fetched, chrome stripped, statements extracted |
+| `.txt` `.md` `.csv` `.json` `.xml` `.html` | works |
+| `.docx` | works (text layer, no images) |
+| `.pdf` | works when the PDF has a text layer |
+| images (PNG/JPG), audio, video, `.xlsx`/`.pptx` | **not supported** — the API says exactly why instead of pretending |
+
+An unsupported input returns `claims_checked: 0` plus a plain-English limitation. That is a promise
+this build keeps: nothing is faked to look complete.
 
 ## Run it
 
@@ -127,9 +140,18 @@ hourly cap stops mattering. Keyless is perfect for a first look; a key is better
 ### API
 
 ```bash
+# text or a URL
 curl -X POST http://localhost:8000/api/verify \
   -H "Content-Type: application/json" \
   -d '{"answer":"FastAPI is on version 0.100.0 and costs $20/month."}'
+
+curl -X POST http://localhost:8000/api/verify \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://fastapi.tiangolo.com/release-notes/"}'
+
+# a file
+curl -X POST http://localhost:8000/api/verify-file \
+  -F "file=@notes.txt"
 ```
 
 ```json
@@ -140,20 +162,24 @@ curl -X POST http://localhost:8000/api/verify \
   "staleness_index": 0.81,
   "risk_band": "high",
   "headline": "2 of 2 claims have drifted since they were written.",
-  "summary": {"current": 0, "stale": 2, "uncertain": 0},
+  "input_kind": "text",
+  "source_ref": null,
+  "summary": {"current": 0, "stale": 2, "uncertain": 0, "non_factual": 0},
   "corrections": [{"claim": "FastAPI is on version 0.100.0", "asserted": "v0.100.0", "current": "v0.146.0"}],
   "repair": {
     "corrected_answer": "FastAPI is on version 0.146.0 and costs $30/month.",
     "edits": [{"asserted": "v0.100.0", "current": "v0.146.0"}],
     "changed": true
   },
-  "trace": [
-    {"step": "split the answer into claims", "count": 2, "ms": 1},
-    {"step": "searched the live web", "count": 2, "ms": 633},
-    {"step": "compared asserted values with evidence", "count": 2, "ms": 0},
-    {"step": "repaired the answer", "count": 1, "ms": 1}
+  "stages": [
+    {"stage": 1, "step": "input ingestion", "detail": "detected text", "count": 1, "ms": 0},
+    {"stage": 3, "step": "normalise & detect claims", "detail": "2 factual, 0 non-factual", "count": 2, "ms": 0},
+    {"stage": 5, "step": "retrieve evidence", "detail": "2 claims with sources", "count": 2, "ms": 633},
+    {"stage": 8, "step": "assemble output", "detail": "1 repair", "count": 2, "ms": 1}
   ],
-  "results": [ ... per-claim verdict, priority, risk_score, explanation, sources, checked_at ... ]
+  "trace": "same list, kept for older clients",
+  "limitations": [],
+  "results": [ ... verdict, claim_type, priority, risk_score, explanation, sources, checked_at ... ]
 }
 ```
 
@@ -180,28 +206,31 @@ Nothing in a `live` response is synthetic. When the network fails the response s
 ## Tests
 
 ```bash
-pytest        # 30 tests, fully offline (network calls are mocked)
+pytest        # 63 tests, fully offline (network calls are mocked)
 ```
 
 Covers: extraction, subject preservation, query building, price drift, price parity, version drift,
 release-train isolation, unrelated-evidence uncertainty, cache fallback, rate-limit fallback,
-network failure, answer repair (versions, price spellings, no-op), risk ordering, trace shape,
-staleness index bounds, API contract, and the served dashboard.
+network failure, answer repair (versions, price spellings, no-op), risk ordering, all eight stages,
+staleness index bounds, API contract, the served dashboard, every ingest format (including the
+unsupported ones), URL fetch failures, and the rule that non-factual claims never get a factual
+verdict and never move the index.
 
 ## Project structure
 
 ```
 app/
-├── main.py                     FastAPI app: /, /api/health, /api/verify
+├── main.py                     FastAPI app: /, /api/health, /api/verify, /api/verify-file
 ├── config.py                   env + timeouts + cache paths
 ├── models.py                   Claim, ClaimVerdict, EvidenceSource
 ├── services/
-│   ├── claim_extractor.py      answer → claims; claim → search query
+│   ├── ingest.py               any input → text + limitations (stages 1-2)
+│   ├── claim_extractor.py      text → claims; claim kind; claim → search query
 │   ├── signals.py              value extraction + version/lexical comparison
 │   ├── evidence_service.py     the verdict engine (evidence-based + deterministic fallback)
 │   ├── repair.py               rewrites the answer with the current values
 │   ├── external_adapters.py    Tavily search (live/cached/bundled) + Bifrost seam
-│   └── verifier.py             orchestration, staleness index, risk band
+│   └── verifier.py             the 8-stage pipeline, index, risk band
 ├── data/cached_evidence.json   evidence recorded 14 Nov 2026, for offline demos
 └── static/index.html           dashboard: index, timestamp, diff view, sources
 tests/                          conftest forces offline mode; adapters tested with mocks
@@ -222,3 +251,9 @@ tests/                          conftest forces offline mode; adapters tested wi
 - Version comparison assumes the evidence page is about the same product; unrelated release trains
   are filtered by major version, which is a heuristic, not a guarantee.
 - Private or internal claims can't be verified by a web search, and Saphes says so instead of guessing.
+- **Images, audio, video, `.xlsx`, `.pptx` are not implemented.** OCR and speech-to-text need models
+  this build does not ship. The API returns a limitation explaining that; it never invents claims
+  from a file it could not read.
+- A URL is fetched once and truncated at 20 000 characters. Long pages surface at most `MAX_CLAIMS`
+  (12) claims, and the response says both of those things in `limitations`.
+- Manipulation or tone detection is out of scope. Nothing here claims to prove intent.

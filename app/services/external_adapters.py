@@ -54,12 +54,7 @@ def _now() -> str:
 
 def has_external_credentials() -> bool:
     """Kept for the Bifrost seam: both keys must be real to enable it."""
-    return bool(
-        BIFROST_API_KEY
-        and BIFROST_API_KEY != "demo-key"
-        and TAVILY_API_KEY
-        and TAVILY_API_KEY != "demo-key"
-    )
+    return bool(BIFROST_API_KEY and TAVILY_API_KEY)
 
 
 def extract_claims_via_bifrost(answer: str) -> list[dict[str, Any]] | None:

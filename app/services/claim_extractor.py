@@ -40,6 +40,13 @@ def _normalize_space(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+_BULLET_RE = re.compile(r"^\s*(?:[-*\u2022\u00b7]+|\d+[.)])\s+")
+
+
+def _strip_bullet(text: str) -> str:
+    return _BULLET_RE.sub("", text).strip()
+
+
 def _classify_claim(segment: str) -> tuple[str, str]:
     normalized = segment.lower()
 
@@ -62,6 +69,89 @@ _VERB_WORDS = {
     "runs", "has", "have", "ships", "released", "allows", "integrates", "works",
     "depends", "gives", "lets", "makes",
 }
+
+
+_OPINION_RE = re.compile(
+    r"\b(i think|i believe|in my (opinion|view)|we believe|arguably|"
+    r"best|worst|beautiful|amazing|terrible|awesome|should|must|ought to|"
+    r"obviously|clearly the best|love|hate|prefer|feel(s)? like)\b",
+    re.IGNORECASE,
+)
+_PREDICTION_RE = re.compile(
+    r"\b(will|won't|going to|expect(ed)? to|forecast|projected|predict|"
+    r"by (19|20)\d{2}|next (year|quarter|month|week)|soon|in the future|"
+    r"is likely to|are likely to|should reach)\b",
+    re.IGNORECASE,
+)
+_QUESTION_RE = re.compile(r"\?\s*$|^(what|why|how|when|where|who|which|is|are|can|could|do|does|did)\b",
+                          re.IGNORECASE)
+
+
+def classify_claim_kind(text: str) -> str:
+    """fact | opinion | prediction | question.
+
+    Only facts are sent to the evidence engine. Everything else gets a
+    non-factual result rather than an invented verdict.
+    """
+    stripped = text.strip()
+    if _QUESTION_RE.search(stripped):
+        return "question"
+    if _OPINION_RE.search(stripped):
+        return "opinion"
+    if _PREDICTION_RE.search(stripped):
+        return "prediction"
+    return "fact"
+
+
+# Link labels and UI chrome read like imperative sentences ("Deploy on FastAPI
+# Cloud", "Follow us on LinkedIn"). They assert nothing, so they are not claims.
+_IMPERATIVE_START_RE = re.compile(
+    r"^(deploy|follow|install|read|click|try|get|join|subscribe|sign|run|open|visit|"
+    r"learn|watch|buy|download|contact|share|report|explore|browse|register|upgrade|"
+    r"migrate|contribute|sponsor|hire|book|call|email|send|paste|copy|add|create|"
+    r"use|note|see|make|start|keep|ensure|avoid|enable|disable|set|don't|do not|"
+    r"configure|connect|refer|check out)\b",
+    re.IGNORECASE,
+)
+_ASSERTION_RE = re.compile(
+    r"\b(is|are|was|were|has|have|had|does|do|did|will|would|can|could|may|might|must|"
+    r"uses?|using|costs?|requires?|includes?|supports?|offers?|provides?|runs?|ships?|"
+    r"releases?|released|allows?|integrates?|works?|depends?|removes?|adds?|becomes?|"
+    r"contains?|means?|says?|said|reports?|announced?|launched?|serves?|powers?|"
+    r"handles?|returns?|accepts?|stores?|sends?|generates?|enables?|dropped?|deprecated|"
+    r"fix(?:es|ed)?|adds?|added|drops?|updates?|updated|upgrades?|implements?|improves?|"
+    r"renames?|bumps?|adopts?|migrates?|generates?|ships?|introduces?|patch(?:es|ed)?)\b",
+    re.IGNORECASE,
+)
+_NUMBER_RE = re.compile(r"\d")
+
+
+_EMOJI_RE = re.compile("[\U0001F000-\U0001FAFF\u2190-\u21FF\u2600-\u27BF\u2B00-\u2BFF\uFE0F]+")
+# "PR #16739 by @tiangolo" is a bookkeeping reference, not a statement.
+_REFERENCE_RE = re.compile(r"\bPR\s*#\d+\b|@[A-Za-z0-9_]+")
+
+
+def _strip_noise(text: str) -> str:
+    cleaned = _EMOJI_RE.sub(" ", text)
+    cleaned = _REFERENCE_RE.sub(" ", cleaned)
+    cleaned = re.sub(r"\s+([.,;:])", r"\1", cleaned)
+    return _normalize_space(cleaned).strip(" ·-")
+
+
+def _alpha_words(text: str) -> list[str]:
+    return [word for word in text.split() if len(re.sub(r"[^A-Za-z]", "", word)) >= 2]
+
+
+def is_assertive(text: str) -> bool:
+    """True when a fragment reads as a statement that could be checked."""
+    stripped = _strip_noise(text)
+    if len(stripped) < 12 or stripped.endswith(":"):
+        return False
+    if len(_alpha_words(stripped)) < 3:
+        return False
+    if _IMPERATIVE_START_RE.match(stripped):
+        return False
+    return bool(_ASSERTION_RE.search(stripped) or _NUMBER_RE.search(stripped))
 
 
 def _subject_of(sentence: str) -> str:
@@ -120,7 +210,7 @@ def extract_claims(answer: str) -> list[Claim]:
     claims: list[Claim] = []
 
     for sentence in sentence_chunks:
-        cleaned = _normalize_space(sentence)
+        cleaned = _normalize_space(_strip_bullet(sentence))
         if not cleaned:
             continue
 
@@ -131,11 +221,14 @@ def extract_claims(answer: str) -> list[Claim]:
                 continue
 
             trimmed = _normalize_space(_restore_subject(cleaned, trimmed, index))
+            trimmed = _strip_noise(trimmed)
             if len(trimmed) < 5:
                 continue
             # A fragment must read as a claim: it needs letters and cannot open
             # with a stray digit left over from splitting "100,000 searches".
             if not re.match(r"[A-Za-z\"'(]", trimmed) or len(re.findall(r"[A-Za-z]", trimmed)) < 3:
+                continue
+            if not is_assertive(trimmed):
                 continue
 
             category, volatility = _classify_claim(trimmed)
@@ -147,6 +240,7 @@ def extract_claims(answer: str) -> list[Claim]:
                     category=category,
                     confidence=confidence,
                     signals=extract_claim_signals(trimmed),
+                    kind=classify_claim_kind(trimmed),
                 )
             )
 
@@ -159,6 +253,7 @@ def extract_claims(answer: str) -> list[Claim]:
                 category="general",
                 confidence=0.6,
                 signals=extract_claim_signals(text),
+                kind=classify_claim_kind(text),
             )
         )
 

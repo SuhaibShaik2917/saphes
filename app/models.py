@@ -5,8 +5,8 @@ from typing import Any, Literal
 from urllib.parse import urlparse
 
 Volatility = Literal["low", "medium", "high"]
-Verdict = Literal["current", "stale", "uncertain"]
-EvidenceMode = Literal["live", "mixed", "cached", "heuristic"]
+Verdict = Literal["current", "stale", "uncertain", "non_factual"]
+EvidenceMode = Literal["live", "mixed", "cached", "heuristic", "none"]
 
 
 def _domain(url: str) -> str:
@@ -42,6 +42,7 @@ class Claim:
     category: str
     confidence: float = 0.0
     signals: dict[str, list[str]] = field(default_factory=dict)
+    kind: str = "fact"
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -50,6 +51,7 @@ class Claim:
             "category": self.category,
             "confidence": self.confidence,
             "signals": self.signals,
+            "kind": self.kind,
         }
 
 
@@ -69,6 +71,7 @@ class ClaimVerdict:
     note: str | None = None
     search_ms: int = 0
     compare_ms: int = 0
+    claim_type: str = "fact"
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -84,4 +87,5 @@ class ClaimVerdict:
             "query": self.query,
             "evidence_mode": self.evidence_mode,
             "note": self.note,
+            "claim_type": self.claim_type,
         }

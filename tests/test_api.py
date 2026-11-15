@@ -38,7 +38,7 @@ def test_verify_endpoint_returns_renderable_results():
     assert payload["claims_checked"] == len(payload["results"])
     assert sum(payload["summary"].values()) == payload["claims_checked"]
     assert all(
-        result["verdict"] in {"current", "stale", "uncertain"}
+        result["verdict"] in {"current", "stale", "uncertain", "non_factual"}
         and isinstance(result["sources"], list)
         for result in payload["results"]
     )

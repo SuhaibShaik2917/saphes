@@ -1,5 +1,5 @@
 from app.services.repair import repair_answer
-from app.services.verifier import risk_score, verify_answer
+from app.services.verifier import verify_answer
 
 
 def test_repair_rewrites_a_stale_version_in_place():
@@ -36,14 +36,17 @@ def test_repair_is_a_no_op_without_corrections():
     assert result["changed"] is False
 
 
-def test_verification_exposes_trace_and_repair():
-    result = verify_answer("Our platform uses API version 2.0 and costs $20/month.")
+def test_verification_exposes_all_eight_stages_and_repair():
+    result = verify_answer(
+        "Our platform uses API version 2.0 and costs $20/month.", allow_live=False
+    )
 
-    steps = [item["step"] for item in result["trace"]]
-    assert steps[0] == "split the answer into claims"
-    assert "searched the live web" in steps
-    assert "repaired the answer" in steps
-    assert all(isinstance(item["ms"], int) for item in result["trace"])
+    stages = result["stages"]
+    assert [item["stage"] for item in stages] == [1, 2, 3, 4, 5, 6, 7, 8]
+    assert stages[0]["step"] == "input ingestion"
+    assert sum("retriev" in item["step"] for item in stages) == 1
+    assert all(isinstance(item["ms"], int) for item in stages)
+    assert result["trace"] == stages  # backwards-compatible alias
     assert set(result["repair"]) == {"corrected_answer", "edits", "changed"}
 
 
